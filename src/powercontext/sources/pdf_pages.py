@@ -316,25 +316,19 @@ async def _memory_records(memory) -> list:
 
 
 # Questions that ask for an amount, a rate or a change are answered on the statements; every other
-# question is a business question whose evidence sits in the filing's front matter.
-_NUMERIC_QUESTION_CUES = (
+# question is a business question whose evidence sits in the filing's front matter. Whole words only:
+# "ratio" must not fire on "concentration".
+_NUMERIC_QUESTION_WORDS = re.compile(
+    r"\b(ratio|percent|percentage|amount|total|margin|growth|increase|decrease|balance|revenue|cost)\b"
+)
+_NUMERIC_QUESTION_PHRASES = (
     "how much",
     "how many",
-    "what percentage",
-    "percent",
-    "ratio",
-    "amount",
     "what is the",
     "what was the",
-    "total",
-    "margin",
-    "growth",
-    "increase",
-    "decrease",
     "change in",
     "cash flow",
     "capex",
-    "balance",
 )
 
 _FUSION_DEPTH = 10
@@ -342,11 +336,14 @@ _SEARCH_CHANNEL_WEIGHT = 0.6
 _HEAD_PAGES = 14
 _FRONT_MATTER_SPAN = 0.06
 _FRONT_MATTER_WEIGHT = 4.0
+_FRONT_MATTER_MIN_PAGES = 100
 
 
 def _asks_for_number(question: str) -> bool:
     body = question.lower()
-    return any(cue in body for cue in _NUMERIC_QUESTION_CUES)
+    return bool(_NUMERIC_QUESTION_WORDS.search(body)) or any(
+        phrase in body for phrase in _NUMERIC_QUESTION_PHRASES
+    )
 
 
 async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[MemoryCitation, ...]:
@@ -358,11 +355,12 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
     understands, which matters because a filing answers a question either on a statement page (term
     density) or on a page that merely names the topic in its heading.
 
-    The fused order supplies the leading pages. Business questions additionally receive a positional
-    prior over the front matter, where a filing puts its description of products, customers and
-    segments; metric questions instead get the remainder of the budget filled with figure-dense
-    pages, because a filing states its numbers on the statements. Every citation is an existing
-    entry version and each page is cited at most once.
+    The fused order supplies the leading pages. In a long filing, business questions additionally
+    receive a positional prior over the front matter, which is where a filing describes its
+    products, customers and segments; metric questions instead get the remainder of the budget
+    filled with figure-dense pages, because a filing states its numbers on the statements. Short
+    documents need neither treatment: a single screen of pages already covers them. Every citation
+    is an existing entry version and each page is cited at most once.
     """
     query = (question or "").strip()
     if limit < 1 or not query:
@@ -393,7 +391,7 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
         return ()
 
     scores = _fused_scores(weighted, size, _FUSION_DEPTH)
-    if not _asks_for_number(query):
+    if size >= _FRONT_MATTER_MIN_PAGES and not _asks_for_number(query):
         span = max(_FRONT_MATTER_SPAN * size, 4.0)
         for index, record in enumerate(records):
             sources = record.entry.sources
