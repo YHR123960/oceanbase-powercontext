@@ -334,7 +334,8 @@ _NUMERIC_QUESTION_PHRASES = (
 _FUSION_DEPTH = 10
 _SEARCH_CHANNEL_WEIGHT = 0.6
 _HEAD_PAGES = 14
-_FRONT_MATTER_SPAN = 0.06
+_BUSINESS_HEAD_PAGES = 16
+_FRONT_MATTER_PAGES = 14
 _FRONT_MATTER_WEIGHT = 4.0
 _FRONT_MATTER_MIN_PAGES = 100
 
@@ -356,11 +357,12 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
     density) or on a page that merely names the topic in its heading.
 
     The fused order supplies the leading pages. In a long filing, business questions additionally
-    receive a positional prior over the front matter, which is where a filing describes its
-    products, customers and segments; metric questions instead get the remainder of the budget
-    filled with figure-dense pages, because a filing states its numbers on the statements. Short
-    documents need neither treatment: a single screen of pages already covers them. Every citation
-    is an existing entry version and each page is cited at most once.
+    receive a positional prior over the first pages, which is where a filing describes its products,
+    customers and segments, and take one more slot from the fused order rather than filling it with
+    the statements; metric questions instead get the remainder of the budget filled with figure-dense
+    pages, because a filing states its numbers on the statements. Short documents need neither
+    treatment: a single screen of pages already covers them. Every citation is an existing entry
+    version and each page is cited at most once.
     """
     query = (question or "").strip()
     if limit < 1 or not query:
@@ -391,15 +393,16 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
         return ()
 
     scores = _fused_scores(weighted, size, _FUSION_DEPTH)
-    if size >= _FRONT_MATTER_MIN_PAGES and not _asks_for_number(query):
-        span = max(_FRONT_MATTER_SPAN * size, 4.0)
+    asks_for_number = _asks_for_number(query)
+    if size >= _FRONT_MATTER_MIN_PAGES and not asks_for_number:
         for index, record in enumerate(records):
             sources = record.entry.sources
             page_number = _page_identity(sources[0].source_id)[1] if sources else index + 1
-            scores[index] += _FRONT_MATTER_WEIGHT / (1.0 + (page_number - 1) / span)
+            if page_number <= _FRONT_MATTER_PAGES:
+                scores[index] += _FRONT_MATTER_WEIGHT / (1.0 + (page_number - 1) / 6.0)
 
     order = sorted(range(size), key=lambda index: (-scores[index], index))
-    head_count = min(_HEAD_PAGES, limit)
+    head_count = min(_HEAD_PAGES if asks_for_number else _BUSINESS_HEAD_PAGES, limit)
     if ranker is not None and size > head_count:
         head, tail = order[:head_count], order[head_count:]
         tail.sort(key=lambda index: (-(ranker.numeric[index] + covers[index]), index))
