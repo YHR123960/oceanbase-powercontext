@@ -347,17 +347,54 @@ def _asks_for_number(question: str) -> bool:
     )
 
 
+_GENERIC_DOCUMENT_TOKENS = frozenset(
+    {
+        "pdf",
+        "form",
+        "sec",
+        "filing",
+        "filings",
+        "report",
+        "reports",
+        "annual",
+        "quarterly",
+        "10k",
+        "10q",
+        "20f",
+        "40f",
+        "8k",
+        "def14a",
+    }
+)
+
+
 def _document_tokens(document_id: str) -> tuple[str, ...]:
-    """Split a document identity such as ``AMD_2022_10K`` into comparable tokens."""
-    return tuple(token for token in _TOKEN_RE.findall(unquote(document_id).lower()) if token)
+    """Split a document identity such as ``AMD_2022_10K`` into comparable tokens.
+
+    Fiscal years and filing-form words are dropped: they appear in most identities of a document
+    set, so they say nothing about which filing a question is about and only manufacture ties.
+    """
+    tokens = []
+    for token in _TOKEN_RE.findall(unquote(document_id).lower()):
+        if not token or len(token) < 3 or token.isdigit() or token in _GENERIC_DOCUMENT_TOKENS:
+            continue
+        tokens.append(token)
+    return tuple(tokens)
+
+
+def _shared_prefix(left: str, right: str) -> int:
+    shared = 0
+    for first, second in zip(left, right):
+        if first != second:
+            break
+        shared += 1
+    return shared
 
 
 def _document_affinity(terms: tuple[str, ...], tokens: tuple[str, ...]) -> float:
     """How strongly a question's wording points at one document identity."""
     affinity = 0.0
     for token in tokens:
-        if len(token) < 2 or token in _STOPWORDS:
-            continue
         for term in terms:
             if term == token:
                 affinity += 2.0
@@ -365,6 +402,9 @@ def _document_affinity(terms: tuple[str, ...], tokens: tuple[str, ...]) -> float
                 affinity += 1.0
             elif len(token) >= 4 and (term.startswith(token) or term.endswith(token)):
                 affinity += 1.0
+            elif len(term) >= 3 and len(token) >= 2 * len(term) and _shared_prefix(term, token) >= 3:
+                # A ticker or shortened name, such as ``AMEX`` for ``AMERICANEXPRESS``.
+                affinity += 0.4
             else:
                 continue
             break
@@ -402,13 +442,15 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
 
     The fused order supplies the leading pages. A scoped Memory may hold a whole document set, so the
     first decision is which filing the question is about: when the wording points at exactly one
-    document identity, that filing takes the whole budget. In a long filing, business questions
-    additionally receive a positional prior over the first pages, which is where a filing describes
-    its products, customers and segments, and take one more slot from the fused order rather than
-    filling it with the statements; metric questions instead get the remainder of the budget filled
-    with figure-dense pages, because a filing states its numbers on the statements. Short documents
-    need neither treatment: a single screen of pages already covers them. Every citation is an
-    existing entry version and each page is cited at most once.
+    document identity, that filing takes the whole budget. Identity matching ignores fiscal years and
+    filing-form words, which every identity in a set carries, and accepts a shortened name such as a
+    ticker, so a question naming its company in any usual form resolves to that company's pages. In a
+    long filing, business questions additionally receive a positional prior over the first pages,
+    which is where a filing describes its products, customers and segments, and take one more slot
+    from the fused order rather than filling it with the statements; metric questions instead get the
+    remainder of the budget filled with figure-dense pages, because a filing states its numbers on the
+    statements. Short documents need neither treatment: a single screen of pages already covers them.
+    Every citation is an existing entry version and each page is cited at most once.
     """
     query = (question or "").strip()
     if limit < 1 or not query:
@@ -431,6 +473,10 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
     if not pool:
         pool = list(range(size))
     pool_size = len(pool)
+    # The positional prior says "this page is in the front matter of the filing", so it only holds
+    # when the candidate pool is one filing. In a set holding several filings it would spend the
+    # whole budget on every filing's first pages.
+    single_filing = len({identities[index][0] for index in pool}) == 1
 
     result = await memory.search(SearchMemoryRequest(query=query, limit=max(limit * 8, 120), mode="auto"))
     in_pool = set(pool)
@@ -453,7 +499,7 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
 
     scores = _fused_scores(weighted, pool_size, _FUSION_DEPTH)
     asks_for_number = _asks_for_number(query)
-    if pool_size >= _FRONT_MATTER_MIN_PAGES and not asks_for_number:
+    if single_filing and pool_size >= _FRONT_MATTER_MIN_PAGES and not asks_for_number:
         for position, index in enumerate(pool):
             _, page_number = identities[index]
             if 1 <= page_number <= _FRONT_MATTER_PAGES:
