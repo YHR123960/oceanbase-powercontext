@@ -27,7 +27,7 @@ import io
 import math
 import re
 from collections import Counter
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from pydantic import BaseModel
 
@@ -347,6 +347,50 @@ def _asks_for_number(question: str) -> bool:
     )
 
 
+def _document_tokens(document_id: str) -> tuple[str, ...]:
+    """Split a document identity such as ``AMD_2022_10K`` into comparable tokens."""
+    return tuple(token for token in _TOKEN_RE.findall(unquote(document_id).lower()) if token)
+
+
+def _document_affinity(terms: tuple[str, ...], tokens: tuple[str, ...]) -> float:
+    """How strongly a question's wording points at one document identity."""
+    affinity = 0.0
+    for token in tokens:
+        if len(token) < 2 or token in _STOPWORDS:
+            continue
+        for term in terms:
+            if term == token:
+                affinity += 2.0
+            elif len(term) >= 3 and len(token) >= 3 and (token.startswith(term) or token.endswith(term)):
+                affinity += 1.0
+            elif len(token) >= 4 and (term.startswith(token) or term.endswith(token)):
+                affinity += 1.0
+            else:
+                continue
+            break
+    return affinity
+
+
+def _dominant_document(terms: tuple[str, ...], documents: list[str]) -> str | None:
+    """The one document a question is about, when the document set holds several filings.
+
+    A scoped Memory can hold a whole document set, and the twenty-page budget then has to be spent
+    on the filing the question is about instead of being spread over every filing in the set.
+    """
+    unique = {document for document in documents if document}
+    if len(unique) < 2:
+        return None
+    scored = sorted(
+        ((_document_affinity(terms, _document_tokens(document)), document) for document in unique),
+        reverse=True,
+    )
+    best_affinity, best = scored[0]
+    runner_up = scored[1][0]
+    if best_affinity <= 0.0 or best_affinity <= runner_up:
+        return None
+    return best
+
+
 async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[MemoryCitation, ...]:
     """Search an already-populated scoped Memory and return exact per-page citations.
 
@@ -356,13 +400,15 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
     understands, which matters because a filing answers a question either on a statement page (term
     density) or on a page that merely names the topic in its heading.
 
-    The fused order supplies the leading pages. In a long filing, business questions additionally
-    receive a positional prior over the first pages, which is where a filing describes its products,
-    customers and segments, and take one more slot from the fused order rather than filling it with
-    the statements; metric questions instead get the remainder of the budget filled with figure-dense
-    pages, because a filing states its numbers on the statements. Short documents need neither
-    treatment: a single screen of pages already covers them. Every citation is an existing entry
-    version and each page is cited at most once.
+    The fused order supplies the leading pages. A scoped Memory may hold a whole document set, so the
+    first decision is which filing the question is about: when the wording points at exactly one
+    document identity, that filing takes the whole budget. In a long filing, business questions
+    additionally receive a positional prior over the first pages, which is where a filing describes
+    its products, customers and segments, and take one more slot from the fused order rather than
+    filling it with the statements; metric questions instead get the remainder of the budget filled
+    with figure-dense pages, because a filing states its numbers on the statements. Short documents
+    need neither treatment: a single screen of pages already covers them. Every citation is an
+    existing entry version and each page is cited at most once.
     """
     query = (question or "").strip()
     if limit < 1 or not query:
@@ -374,50 +420,60 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
 
     size = len(records)
     by_entry = {record.entry.entry_id: index for index, record in enumerate(records)}
+    identities = [
+        _page_identity(record.entry.sources[0].source_id) if record.entry.sources else ("", index)
+        for index, record in enumerate(records)
+    ]
     terms = tuple(dict.fromkeys(_content_terms(query)))
 
-    weighted: list[tuple[float, list[int]]] = []
+    target = _dominant_document(terms, [document for document, _ in identities])
+    pool = [index for index, (document, _) in enumerate(identities) if document == target] if target else []
+    if not pool:
+        pool = list(range(size))
+    pool_size = len(pool)
+
     result = await memory.search(SearchMemoryRequest(query=query, limit=max(limit * 8, 120), mode="auto"))
-    searched = [by_entry[hit.entry_id] for hit in result.hits if hit.entry_id in by_entry]
+    in_pool = set(pool)
+    searched = [by_entry[hit.entry_id] for hit in result.hits if by_entry.get(hit.entry_id) in in_pool]
+
+    weighted: list[tuple[float, list[int]]] = []
     ranker: _PageRanker | None = None
     covers: list[float] = []
     if terms:
-        ranker = _PageRanker(records)
-        totals = [ranker.bm25(terms, index) for index in range(size)]
-        covers = [ranker.coverage(terms, index) for index in range(size)]
+        ranker = _PageRanker([records[index] for index in pool])
+        totals = [ranker.bm25(terms, position) for position in range(pool_size)]
+        covers = [ranker.coverage(terms, position) for position in range(pool_size)]
         for scores in (totals, covers):
-            weighted.append((1.0, sorted(range(size), key=lambda index: (-scores[index], index))))
+            weighted.append((1.0, sorted(range(pool_size), key=lambda position: (-scores[position], position))))
     if searched:
-        weighted.append((_SEARCH_CHANNEL_WEIGHT, searched))
+        position_of = {index: position for position, index in enumerate(pool)}
+        weighted.append((_SEARCH_CHANNEL_WEIGHT, [position_of[index] for index in searched]))
     if not weighted:
         return ()
 
-    scores = _fused_scores(weighted, size, _FUSION_DEPTH)
+    scores = _fused_scores(weighted, pool_size, _FUSION_DEPTH)
     asks_for_number = _asks_for_number(query)
-    if size >= _FRONT_MATTER_MIN_PAGES and not asks_for_number:
-        for index, record in enumerate(records):
-            sources = record.entry.sources
-            page_number = _page_identity(sources[0].source_id)[1] if sources else index + 1
-            if page_number <= _FRONT_MATTER_PAGES:
-                scores[index] += _FRONT_MATTER_WEIGHT / (1.0 + (page_number - 1) / 6.0)
+    if pool_size >= _FRONT_MATTER_MIN_PAGES and not asks_for_number:
+        for position, index in enumerate(pool):
+            _, page_number = identities[index]
+            if 1 <= page_number <= _FRONT_MATTER_PAGES:
+                scores[position] += _FRONT_MATTER_WEIGHT / (1.0 + (page_number - 1) / 6.0)
 
-    order = sorted(range(size), key=lambda index: (-scores[index], index))
+    order = sorted(range(pool_size), key=lambda position: (-scores[position], position))
     head_count = min(_HEAD_PAGES if asks_for_number else _BUSINESS_HEAD_PAGES, limit)
-    if ranker is not None and size > head_count:
+    if ranker is not None and pool_size > head_count:
         head, tail = order[:head_count], order[head_count:]
-        tail.sort(key=lambda index: (-(ranker.numeric[index] + covers[index]), index))
+        tail.sort(key=lambda position: (-(ranker.numeric[position] + covers[position]), position))
         order = [*head, *tail]
 
     citations: list[MemoryCitation] = []
     seen: set[tuple[str, int]] = set()
-    for index in order:
-        record = records[index]
-        sources = record.entry.sources
-        identity = _page_identity(sources[0].source_id) if sources else ("", index)
+    for index in [pool[position] for position in order] + [index for index in range(size) if index not in in_pool]:
+        identity = identities[index]
         if identity in seen:
             continue
         seen.add(identity)
-        citations.append(record.citation)
+        citations.append(records[index].citation)
         if len(citations) >= limit:
             break
     return tuple(citations)
