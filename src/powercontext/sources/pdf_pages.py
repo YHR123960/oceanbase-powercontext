@@ -300,29 +300,69 @@ def _reciprocal_rank_fusion(rankings: list[list[int]], depth: int) -> list[int]:
     return sorted(fused, key=lambda index: (-fused[index], index))
 
 
+def _fused_scores(weighted: list[tuple[float, list[int]]], size: int, depth: int) -> list[float]:
+    """Weighted reciprocal-rank fusion as a score vector over all candidate pages."""
+    scores = [0.0] * size
+    for weight, ranking in weighted:
+        for position, index in enumerate(ranking, start=1):
+            scores[index] += weight / (depth + position)
+    return scores
+
+
 async def _memory_records(memory) -> list:
     """Read every active entry of the scoped Memory so ranking sees the whole document set."""
     page = await memory.list()
     return list(page.entries)
 
 
-_HEAD_PAGES = 12
-_TAIL_NUMERIC_WEIGHT = 1.0
+# Questions that ask for an amount, a rate or a change are answered on the statements; every other
+# question is a business question whose evidence sits in the filing's front matter.
+_NUMERIC_QUESTION_CUES = (
+    "how much",
+    "how many",
+    "what percentage",
+    "percent",
+    "ratio",
+    "amount",
+    "what is the",
+    "what was the",
+    "total",
+    "margin",
+    "growth",
+    "increase",
+    "decrease",
+    "change in",
+    "cash flow",
+    "capex",
+    "balance",
+)
+
+_FUSION_DEPTH = 10
+_SEARCH_CHANNEL_WEIGHT = 0.6
+_HEAD_PAGES = 14
+_FRONT_MATTER_SPAN = 0.06
+_FRONT_MATTER_WEIGHT = 4.0
+
+
+def _asks_for_number(question: str) -> bool:
+    body = question.lower()
+    return any(cue in body for cue in _NUMERIC_QUESTION_CUES)
 
 
 async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[MemoryCitation, ...]:
     """Search an already-populated scoped Memory and return exact per-page citations.
 
-    The Memory API supplies one candidate ranking; a whole-corpus lexical pass over the same
-    Memory entries adds two more (BM25 over the page body with a heading field boost, and
-    inverse-document-frequency term coverage). The three rankings are fused, so a question that
-    names a statement the page only carries in its heading still reaches the right page.
+    Three complementary rankings are fused with weights over the whole corpus held by the scoped
+    Memory: BM25 over the page body with a heading field boost, inverse-document-frequency term
+    coverage, and the Memory API's own candidate order. Fusion keeps a page that only one signal
+    understands, which matters because a filing answers a question either on a statement page (term
+    density) or on a page that merely names the topic in its heading.
 
-    The fused order is trusted for the leading pages and then topped up with figure-dense pages:
-    a filing answers metric questions on its statements, so once the lexical candidates are
-    exhausted, pages with a high share of numeric tokens (and the best term coverage among them)
-    are the most likely evidence. Every citation is an existing entry version and each page is
-    cited at most once.
+    The fused order supplies the leading pages. Business questions additionally receive a positional
+    prior over the front matter, where a filing puts its description of products, customers and
+    segments; metric questions instead get the remainder of the budget filled with figure-dense
+    pages, because a filing states its numbers on the statements. Every citation is an existing
+    entry version and each page is cited at most once.
     """
     query = (question or "").strip()
     if limit < 1 or not query:
@@ -332,29 +372,39 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
     if not records:
         return ()
 
+    size = len(records)
     by_entry = {record.entry.entry_id: index for index, record in enumerate(records)}
     terms = tuple(dict.fromkeys(_content_terms(query)))
 
-    rankings: list[list[int]] = []
-    result = await memory.search(SearchMemoryRequest(query=query, limit=max(limit * 4, 32), mode="auto"))
+    weighted: list[tuple[float, list[int]]] = []
+    result = await memory.search(SearchMemoryRequest(query=query, limit=max(limit * 8, 120), mode="auto"))
     searched = [by_entry[hit.entry_id] for hit in result.hits if hit.entry_id in by_entry]
     ranker: _PageRanker | None = None
     covers: list[float] = []
     if terms:
         ranker = _PageRanker(records)
-        totals = [ranker.bm25(terms, index) for index in range(len(records))]
-        covers = [ranker.coverage(terms, index) for index in range(len(records))]
+        totals = [ranker.bm25(terms, index) for index in range(size)]
+        covers = [ranker.coverage(terms, index) for index in range(size)]
         for scores in (totals, covers):
-            rankings.append(sorted(range(len(records)), key=lambda index: (-scores[index], index)))
+            weighted.append((1.0, sorted(range(size), key=lambda index: (-scores[index], index))))
     if searched:
-        rankings.append(searched)
-    if not rankings:
+        weighted.append((_SEARCH_CHANNEL_WEIGHT, searched))
+    if not weighted:
         return ()
 
-    order = _reciprocal_rank_fusion(rankings, depth=10)
-    if ranker is not None and len(order) > _HEAD_PAGES:
-        head, tail = order[:_HEAD_PAGES], order[_HEAD_PAGES:]
-        tail.sort(key=lambda index: (-(ranker.numeric[index] + _TAIL_NUMERIC_WEIGHT * covers[index]), index))
+    scores = _fused_scores(weighted, size, _FUSION_DEPTH)
+    if not _asks_for_number(query):
+        span = max(_FRONT_MATTER_SPAN * size, 4.0)
+        for index, record in enumerate(records):
+            sources = record.entry.sources
+            page_number = _page_identity(sources[0].source_id)[1] if sources else index + 1
+            scores[index] += _FRONT_MATTER_WEIGHT / (1.0 + (page_number - 1) / span)
+
+    order = sorted(range(size), key=lambda index: (-scores[index], index))
+    head_count = min(_HEAD_PAGES, limit)
+    if ranker is not None and size > head_count:
+        head, tail = order[:head_count], order[head_count:]
+        tail.sort(key=lambda index: (-(ranker.numeric[index] + covers[index]), index))
         order = [*head, *tail]
 
     citations: list[MemoryCitation] = []
