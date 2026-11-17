@@ -194,8 +194,19 @@ _STOPWORDS = frozenset(
 )
 
 
+def _stem(token: str) -> str:
+    """Fold trivial English plurals so ``margin`` also matches ``margins``."""
+    if len(token) > 4 and token.endswith("ies"):
+        return f"{token[:-3]}y"
+    if len(token) > 4 and token.endswith("es") and not token.endswith("ses"):
+        return token[:-2]
+    if len(token) > 3 and token.endswith("s") and not token.endswith("ss"):
+        return token[:-1]
+    return token
+
+
 def _page_tokens(text: str) -> list[str]:
-    return [token.lower() for token in _TOKEN_RE.findall(text)]
+    return [_stem(token.lower()) for token in _TOKEN_RE.findall(text)]
 
 
 def _content_terms(text: str) -> list[str]:
@@ -241,6 +252,11 @@ class _PageRanker:
         self.document_frequency = document_frequency
         self.heading_frequency = heading_frequency
         self.total = len(records)
+        # Share of numeric tokens: financial statements are dense in figures, narrative pages are not.
+        self.numeric = [
+            sum(value for term, value in counter.items() if term.isdigit()) / (sum(counter.values()) or 1)
+            for counter in self.counters
+        ]
 
     def _idf(self, term: str) -> float:
         frequency = self.document_frequency[term]
@@ -290,14 +306,23 @@ async def _memory_records(memory) -> list:
     return list(page.entries)
 
 
+_HEAD_PAGES = 12
+_TAIL_NUMERIC_WEIGHT = 1.0
+
+
 async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[MemoryCitation, ...]:
     """Search an already-populated scoped Memory and return exact per-page citations.
 
     The Memory API supplies one candidate ranking; a whole-corpus lexical pass over the same
     Memory entries adds two more (BM25 over the page body with a heading field boost, and
     inverse-document-frequency term coverage). The three rankings are fused, so a question that
-    names a statement the page only carries in its heading still reaches the right page. Every
-    citation is an existing entry version and each page is cited at most once.
+    names a statement the page only carries in its heading still reaches the right page.
+
+    The fused order is trusted for the leading pages and then topped up with figure-dense pages:
+    a filing answers metric questions on its statements, so once the lexical candidates are
+    exhausted, pages with a high share of numeric tokens (and the best term coverage among them)
+    are the most likely evidence. Every citation is an existing entry version and each page is
+    cited at most once.
     """
     query = (question or "").strip()
     if limit < 1 or not query:
@@ -313,6 +338,8 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
     rankings: list[list[int]] = []
     result = await memory.search(SearchMemoryRequest(query=query, limit=max(limit * 4, 32), mode="auto"))
     searched = [by_entry[hit.entry_id] for hit in result.hits if hit.entry_id in by_entry]
+    ranker: _PageRanker | None = None
+    covers: list[float] = []
     if terms:
         ranker = _PageRanker(records)
         totals = [ranker.bm25(terms, index) for index in range(len(records))]
@@ -324,9 +351,15 @@ async def search_pdf_pages(memory, question: str, limit: int = 10) -> tuple[Memo
     if not rankings:
         return ()
 
+    order = _reciprocal_rank_fusion(rankings, depth=10)
+    if ranker is not None and len(order) > _HEAD_PAGES:
+        head, tail = order[:_HEAD_PAGES], order[_HEAD_PAGES:]
+        tail.sort(key=lambda index: (-(ranker.numeric[index] + _TAIL_NUMERIC_WEIGHT * covers[index]), index))
+        order = [*head, *tail]
+
     citations: list[MemoryCitation] = []
     seen: set[tuple[str, int]] = set()
-    for index in _reciprocal_rank_fusion(rankings, depth=10):
+    for index in order:
         record = records[index]
         sources = record.entry.sources
         identity = _page_identity(sources[0].source_id) if sources else ("", index)
