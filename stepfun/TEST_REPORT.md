@@ -2,7 +2,7 @@
 
 > 所有测试均为本机真实运行，日志原始文件在 `evidence/` 与 `backend/evidence/`。
 > 环境：Windows 11 (10.0.26200)、Node v22.22.2、npm 10.9.7、Chrome (Playwright 1.65.1 headless)、seekdb 1.4.0。
-> 代码版本：官方基础分支 `2026-competition-ecosystem` HEAD `d647275c308e09b7b623f322a26f5c4e85734fb0`；本机作品见本提交 SHA。
+> 代码版本：官方基础分支 `2026-competition-ecosystem` HEAD `d647275c308e09b7b623f322a26f5c4e85734fb0`；本机作品见本仓库提交历史（git log）。
 
 | # | 测试项 | 命令 | 退出码 | 结果摘要 | 证据 |
 |---|---|---|---|---|---|

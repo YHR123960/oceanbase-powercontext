@@ -246,4 +246,4 @@ SUMMARY pass=6 fail=0
 
 ### 当前 Git 提交
 - 分支：`competition/stepfun-submission`（本地）
-- Commit SHA：见 git log（提交后填入）
+- Commit SHA：见 `git log -1 --format=%H`（本交付含 2 个提交：主提交 + 文档 SHA 回填）
