@@ -2,24 +2,23 @@ PAGE_TITLE StepFun 迷你知识库 · 浏览器本地推理 + seekdb 混合检�
 WEBGPU_PROBE_UI WebGPU 探测：navigator.gpu.requestAdapter() 返回 null
 BACKEND_CHIP 推理后端: wasm ✓已验证
 PASS 模型在本地加载成功并显示后端
-IMPORT_PROGRESS 导入完成：1 条（向量化 66ms / 写入 251ms / 刷新 241ms）
+IMPORT_PROGRESS 导入完成：1 条（向量化 75ms / 写入 298ms / 刷新 334ms）
 PASS 文档导入+本地向量化+写库+索引刷新
-RESULT_COUNT 3
+RESULT_COUNT 4
 PASS 混合检索返回结果
-SEARCH_META 引擎 seekdb::DBMS_HYBRID_SEARCH · 查询向量 13ms · seekdb 检索 43ms · 端到端 73ms
+SEARCH_META 引擎 seekdb::DBMS_HYBRID_SEARCH · 查询向量 11ms · seekdb 检索 41ms · 端到端 59ms
 PASS 检索由 seekdb 执行
 EXTERNAL_REQUEST_COUNT 0
 PASS 无云端 embedding 请求（所有请求本地）
 PASS 无页面运行时错误
 WEBGPU_FORCE_CHIP 推理后端: wasm ✓已验证
-WEBGPU_CONSOLE error: Failed to load resource: the server responded with a status of 404 (Not Found)
+WEBGPU_CONSOLE 
 
 SUMMARY pass=6 fail=0
 CONSOLE_TAIL
 debug: [vite] connecting...
 debug: [vite] connected.
 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-error: Failed to load resource: the server responded with a status of 404 (Not Found)
 warning: No available adapters.
 warning: No available adapters.
 warning: The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127

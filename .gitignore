@@ -5,6 +5,7 @@ node_modules/
 # 构建产物
 frontend/dist/
 **/dist/
+**/.vite/
 
 # seekdb 数据库数据目录（运行时生成，体积大，不提交；用 npm run init 重建）
 **/backend/data/

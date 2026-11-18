@@ -155,3 +155,4 @@ npm run init && npm start
    - 这些已固化在 `backend/src/server.js` 与 `db.js` 中
 3. **npm 安装**：seekdb 的 peer 依赖用 pnpm `workspace:*` 协议，`.npmrc` 设置 `legacy-peer-deps=true` 绕过（本项目不需要 default-embed，向量在浏览器生成）。
 4. **模型仓库**：`hf-mirror.com` 镜像可用，`huggingface.co` 主站在本机不可达；模型已随项目下载，运行时零外网请求。
+5. **Vite `/api` 代理**：若浏览器导入报 `Unexpected end of JSON input`，说明 `/api/*` 未代理到后端而返回了 index.html（常见于 `vite.config.ts` 被改动后开发服务器未重载）。停止前端进程并重新执行 `npm run dev`，再用 `curl http://127.0.0.1:5173/api/health` 确认返回 JSON 即可。

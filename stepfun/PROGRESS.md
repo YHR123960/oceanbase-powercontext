@@ -247,3 +247,28 @@ SUMMARY pass=6 fail=0
 ### 当前 Git 提交
 - 分支：`competition/stepfun-submission`（本地）
 - Commit SHA：见 `git log -1 --format=%H`（本交付含 2 个提交：主提交 + 文档 SHA 回填）
+
+---
+
+## 阶段 11：官方提交规范核对与 Git 基线修复
+
+**状态：已完成**  
+**时间：2026-11-18 11:12 – 11:25 GMT+8**
+
+### 官方要求核对结果（真实查阅）
+- 赛题文档（语雀「阶跃星辰」）：要求基于 `powercontext` 的 `2026-competition-ecosystem` 分支开发，**在测评平台提交分支/commit hash**，资产放入对应 `stepfun/` 目录；提交产物为「可运行的 Web 应用、完整源码和一页技术说明」，总分 20。
+- 《GitHub 在大赛中的使用说明》：使用自己的**私有仓库 Import Repository** 导入官方仓库，生成 token 填入参赛信息，再在测评平台提交测试；**未要求向官方仓库提 Pull Request**。
+- 《比赛仓库地址》：阶跃星辰对应 `powercontext` / `2026-competition-ecosystem` / `stepfun` 目录。
+- 官方分支根目录实际只有 `dify/ gaode/ minimax/ qoder/ stepfun/` 五个仅含 `.gitkeep` 的占位目录，HEAD=`d647275c308e09b7b623f322a26f5c4e85734fb0`。
+- 附件：演示视频**未要求**；截图/性能报告未列为硬性附件，但技术说明必须含关键性能对比结果。本项目已附真实截图与原始性能日志。
+
+### 发现的阻塞问题与修复
+- **问题**：此前本地仓库 `git init` 后首个提交是根提交（`0c1d402` 无父提交），官方基础提交 `d647275` 不在历史中，不满足「commit hash 基于此分支开发」。
+- **修复**：从只读参考克隆 `D:/OceanBase_WorkBuddy/_reference_powercontext` 抓取官方提交对象（未联网推送），以 `d647275` 为基线 cherry-pick 两个作品提交，得到新链：
+  `d647275 → 9f9d38c（主提交）→ 7a36999（文档）`；删除 `stepfun/.gitkeep` 占位并加入 `SUBMISSION.md`。
+- **验证**：`git merge-base --is-ancestor d647275 HEAD` 返回 0；`git remote -v` 无输出；未创建 PR、未推送。
+- 官方其他赛道占位目录 `dify/ gaode/ minimax/ qoder/` 原样保留，未修改 MiniMax/Codex 既有资产。
+
+### 本阶段新增文件
+- `SUBMISSION.md`：官方要求逐项对照、提交方式结论、git 基线核验、最终材料清单、提交前自检。
+

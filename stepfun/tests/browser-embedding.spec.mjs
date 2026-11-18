@@ -70,7 +70,7 @@ async function main() {
   await page.waitForFunction(() => {
     const chip = document.querySelector('.status-chips .chip');
     return chip && chip.textContent && chip.textContent.includes('wasm') && !chip.textContent.includes('未加载');
-  }, { timeout: 180000 });
+  }, null, { timeout: 180000 });
   const backendChip = await page.locator('.status-chips .chip').first().textContent();
   log('BACKEND_CHIP ' + (backendChip || '').trim());
   check('模型在本地加载成功并显示后端', !!backendChip && backendChip.includes('wasm'), backendChip);
@@ -85,7 +85,7 @@ WebGPU 不可用时自动降级到 WASM 推理后端。`;
   await page.waitForFunction(() => {
     const p = document.querySelector('.progress');
     return p && p.textContent && p.textContent.includes('导入完成');
-  }, { timeout: 180000 });
+  }, null, { timeout: 180000 });
   const progressText = await page.locator('.progress').textContent();
   log('IMPORT_PROGRESS ' + (progressText || '').trim());
   check('文档导入+本地向量化+写库+索引刷新', !!progressText && progressText.includes('导入完成'), progressText);

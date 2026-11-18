@@ -215,3 +215,26 @@
 [2026-11-18T02:21:34.825Z] DOC_ADD {"kb":"iso_test_b","count":1,"writeMs":3,"ids":["iso_test_b::y2"]}
 [2026-11-18T02:21:35.156Z] INDEX_REFRESH {"refreshMs":325}
 [2026-11-18T02:21:35.172Z] HYBRID_SEARCH {"kb":"iso_test_b","keyword":"gardening","nResults":10,"searchMs":6,"returned":1,"topIds":["iso_test_b::y2"]}
+[2026-11-18T03:17:28.694Z] KB_CLEAR {"kb":"iso_test_a","deleted":2}
+[2026-11-18T03:17:29.320Z] KB_CLEAR {"kb":"iso_test_b","deleted":2}
+[2026-11-18T03:17:29.458Z] DOC_ADD {"kb":"iso_test_a","count":2,"writeMs":129,"ids":["iso_test_a::x1","iso_test_a::x2"]}
+[2026-11-18T03:17:29.479Z] DOC_ADD {"kb":"iso_test_b","count":1,"writeMs":15,"ids":["iso_test_b::y1"]}
+[2026-11-18T03:17:29.687Z] INDEX_REFRESH {"refreshMs":203}
+[2026-11-18T03:17:29.695Z] INDEX_REFRESH {"refreshMs":1}
+[2026-11-18T03:17:29.748Z] HYBRID_SEARCH {"kb":"iso_test_b","keyword":"database","nResults":20,"searchMs":32,"returned":0,"topIds":[]}
+[2026-11-18T03:17:29.761Z] HYBRID_SEARCH {"kb":"iso_test_a","keyword":"cooking","nResults":20,"searchMs":6,"returned":0,"topIds":[]}
+[2026-11-18T03:17:29.769Z] DOC_ADD {"kb":"iso_test_b","count":1,"writeMs":2,"ids":["iso_test_b::y2"]}
+[2026-11-18T03:17:30.177Z] INDEX_REFRESH {"refreshMs":403}
+[2026-11-18T03:17:30.192Z] HYBRID_SEARCH {"kb":"iso_test_b","keyword":"gardening","nResults":10,"searchMs":6,"returned":1,"topIds":["iso_test_b::y2"]}
+[2026-11-18T03:17:30.710Z] KB_CLEAR {"kb":"alpha","deleted":3}
+[2026-11-18T03:17:31.126Z] KB_CLEAR {"kb":"beta","deleted":1}
+[2026-11-18T03:17:31.153Z] DOC_ADD {"kb":"alpha","count":2,"writeMs":18,"ids":["alpha::a1","alpha::a2"]}
+[2026-11-18T03:17:31.172Z] DOC_ADD {"kb":"alpha","count":1,"writeMs":13,"ids":["alpha::a3"]}
+[2026-11-18T03:17:31.189Z] DOC_ADD {"kb":"beta","count":1,"writeMs":10,"ids":["beta::b1"]}
+[2026-11-18T03:17:31.497Z] INDEX_REFRESH {"refreshMs":303}
+[2026-11-18T03:17:31.515Z] HYBRID_SEARCH {"kb":"alpha","keyword":"vector","nResults":5,"searchMs":5,"returned":1,"topIds":["alpha::a1"]}
+[2026-11-18T03:17:31.525Z] HYBRID_SEARCH {"kb":"beta","keyword":"vector","nResults":5,"searchMs":5,"returned":0,"topIds":[]}
+[2026-11-18T03:17:31.537Z] VECTOR_SEARCH {"kb":"alpha","nResults":3,"searchMs":7,"returned":3}
+[2026-11-18T03:20:02.373Z] DOC_ADD {"kb":"general","count":1,"writeMs":298,"ids":["general::1794972002066-0"]}
+[2026-11-18T03:20:02.719Z] INDEX_REFRESH {"refreshMs":334}
+[2026-11-18T03:20:02.882Z] HYBRID_SEARCH {"kb":"general","keyword":"浏览器本地 embedding","nResults":8,"searchMs":41,"returned":4,"topIds":["general::1794967548850-0","general::1794967691317-0","general::1794967779748-0","general::1794972002066-0"]}

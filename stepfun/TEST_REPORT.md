@@ -16,6 +16,14 @@
 | 8 | 三配置性能与质量 | `node tests/run-benchmark.mjs` | 0 | A/B/C 全部跑通，5 次中位数 | `benchmark/results.json`、`evidence/benchmark/*.json` |
 | 9 | 干净环境复现检查 | `node scripts/verify-fresh.mjs` | 0 | 30/30 PASS | `evidence/verify-fresh.log` |
 | 10 | 前端构建 | `npm run build` (frontend) | 0 | TS 无错误，Vite 构建成功 | 终端输出（见 PROGRESS.md） |
+| 11 | 官方提交规范与 git 基线 | 查阅官方语雀文档；`git merge-base --is-ancestor d647275c… HEAD` | 0 | 无需 PR；提交需基于官方分支；本地历史已接入 `d647275` | `SUBMISSION.md` §1–§3、`PROGRESS.md` 阶段 11 |
+| 12 | 浏览器测试复测（代理修复后） | `node tests/browser-embedding.spec.mjs` | 0 | 6/6 PASS；导入完成（向量化 75ms/写入 298ms/刷新 334ms）；检索 4 条；外部请求 0 | `evidence/browser/browser-test.log`、`evidence/browser/app-wasm.png` |
+
+## 提交前修复记录
+
+- **Vite `/api` 代理失效**：git 分支切换期间 `vite.config.ts` 被临时删除又重建，正在运行的 Vite 未重载代理配置，`/api/*` 返回 index.html，浏览器导入报 `Unexpected end of JSON input`。重启前端开发服务器后代理恢复（`curl /api/kb/general/count` 返回 JSON），浏览器测试 6/6 通过。README §10 增加排查说明。
+- **测试脚本超时参数**：`tests/browser-embedding.spec.mjs` 两处 `page.waitForFunction(fn, {timeout})` 把 options 误传成 arg，实际使用默认 30s；已改为 `page.waitForFunction(fn, null, {timeout:180000})`，与 `run-benchmark.mjs` 写法一致。
+- 复测同批执行：`kb-isolation` 11/11、`api-smoke` 10/10、`verify-fresh` 30/30 均通过。
 
 ## 未通过/受限项（如实记录）
 

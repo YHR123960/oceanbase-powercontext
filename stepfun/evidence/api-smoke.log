@@ -1,0 +1,17 @@
+PASS health
+PASS initial import alpha (2 docs)
+WRITE_MS 18
+PASS incremental import alpha (+1)
+PASS import beta (isolation setup)
+PASS index refresh
+REFRESH_MS 303
+PASS alpha count=3
+PASS beta count=1
+PASS hybrid search by seekdb
+HYBRID_ALPHA [{"id":"alpha::a1","kb":"alpha","d":4.63293224380088}]
+SEARCH_MS 5
+PASS kb isolation (beta has no alpha docs)
+HYBRID_BETA []
+PASS vector-only search
+
+SUMMARY pass=10 fail=0
