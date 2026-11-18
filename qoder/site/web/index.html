@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研习工作台 · 把课程笔记、科研阅读和待办存进 PowerContext</title>
+<meta name="description" content="研习工作台：本地运行的学习科研工作台。笔记、标签、关联待办与进度全部以 PowerContext Atomic Memory 保存，刷新与重启后仍在，检索走服务端文本与标签能力。">
+<link rel="stylesheet" href="site.design.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#top">
+    <span class="brand-mark">研</span>
+    <span>研习工作台</span>
+  </a>
+  <nav class="nav" aria-label="页面导航">
+    <a href="#problem">痛点</a>
+    <a href="#features">功能</a>
+    <a href="#screens">截图</a>
+    <a href="#powercontext">技术结合</a>
+    <a href="#run">运行说明</a>
+    <a href="#verify">验证样例</a>
+  </nav>
+  <a class="repo-button" href="https://github.com/YHR123960/oceanbase-powercontext" rel="noopener">代码仓库</a>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <p class="eyebrow">Qoder × OceanBase 大赛 · Build with Qoder</p>
+    <h1>课程笔记、科研阅读和待办，<em>只存在 PowerContext 里</em></h1>
+    <p class="lede">
+      一个本地运行的学习科研工作台：记录一条资料、给它打标签和关键词、挂上关联待办、切换阅读进度。
+      应用进程内不保存任何业务数据，也没有本地数据库文件——每一次界面刷新都重新向 PowerContext 读取，
+      所以关掉页面、停掉服务再启动，数据仍然在。
+    </p>
+    <ul class="facts">
+      <li><b>37</b><span>项自动化测试全部通过</span></li>
+      <li><b>10/10</b><span>重启恢复验证步骤通过</span></li>
+      <li><b>12/12</b><span>PowerContext 原始接口核对通过</span></li>
+      <li><b>0</b><span>次模型调用，不消耗任何额度</span></li>
+    </ul>
+    <p class="notice">
+      本项目网站是作品展示与评审入口。完整功能在开发者本机运行（PowerContext 服务监听 127.0.0.1:2893，
+      应用监听 127.0.0.1:2894），页面上的截图均为真实运行结果，不是设计稿。
+    </p>
+  </section>
+
+  <section id="problem" class="band">
+    <h2>要解决的真实问题</h2>
+    <div class="grid three">
+      <article class="card">
+        <h3>笔记散在各处，复习时找不回来</h3>
+        <p>课程笔记在文档里、论文批注在 PDF 里、临时想法在聊天记录里。期末或组会前要翻十几个地方，
+        还是不确定哪条已经读透。</p>
+      </article>
+      <article class="card">
+        <h3>“读没读完”和“接下来做什么”是分开的</h3>
+        <p>记录工具里只有正文，待办工具里只有任务，两者靠人脑对齐。一条笔记下一步该做什么，
+        往往要重新读一遍才能想起来。</p>
+      </article>
+      <article class="card">
+        <h3>换个工具，历史就没了</h3>
+        <p>本地 JSON、浏览器缓存、临时数据库都会随环境消失。想让资料长期可查，就得有个真正落盘、
+        能被别的进程读回来的存储。</p>
+      </article>
+    </div>
+    <p class="band-note">
+      研习工作台的取舍是：把“资料 + 标签 + 待办 + 进度”统一成一组可追加的上下文记录，
+      交给 PowerContext 保存，检索直接用它的文本与标签能力。
+    </p>
+  </section>
+
+  <section id="features" class="band alt">
+    <h2>核心功能</h2>
+    <div class="grid two">
+      <article class="card">
+        <span class="step">1</span>
+        <h3>记录一条资料</h3>
+        <p>标题、课程/项目、标签、关键词、正文一次写入。正文超过 PowerContext 单条 8192 UTF-8 字节上限时
+        自动分块，读取时按 <code>chunk_index</code> 无损拼回。</p>
+      </article>
+      <article class="card">
+        <span class="step">2</span>
+        <h3>关键词检索与标签过滤</h3>
+        <p>关键词走服务端 <code>/v1/atomic-memory/search</code>（<code>mode=text</code>），
+        标签走 <code>list_atomic</code> 的服务端标签索引，支持任一/全部满足。界面会标注每条结果的命中方式，
+        不把工作退化成一次字符串包含判断。</p>
+      </article>
+      <article class="card">
+        <span class="step">3</span>
+        <h3>关联待办</h3>
+        <p>给一条资料挂待办、勾选完成、再删除。列表卡片直接显示“几项待办未完成”，
+        阅读状态和下一步动作留在同一条上下文里。</p>
+      </article>
+      <article class="card">
+        <span class="step">4</span>
+        <h3>进度时间线</h3>
+        <p>未开始 / 在读 / 已掌握每次切换都追加一条进度记录，可带备注。
+        时间线按笔记修订号排序，同一秒内连续切换也不会颠倒顺序。</p>
+      </article>
+      <article class="card">
+        <span class="step">5</span>
+        <h3>刷新与重启后仍在</h3>
+        <p>应用没有缓存，也没有本地库。重启 PowerContext 服务后重新读取，
+        条目数量与记录摘要保持一致——这一点有专门的端到端脚本验证。</p>
+      </article>
+      <article class="card">
+        <span class="step">6</span>
+        <h3>数据来源面板</h3>
+        <p>顶栏“数据来源”展开后显示 Server ID、包版本、API 契约、Scope、记忆 kind、
+        记录条数和最近的服务端调用（方法 / 路径 / 状态码 / 字节 / 耗时），
+        评审能直接核对指定技术是否真的在起作用。</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="screens" class="band">
+    <h2>真实运行截图</h2>
+    <div class="shots">
+      <figure>
+        <img src="assets/01_workbench_list.png" alt="研习工作台主界面：左侧记录表单、中间笔记列表、右侧笔记详情、关联待办与进度时间线" width="1600" height="1000">
+        <figcaption><b>主界面</b>：左栏写入表单，中栏笔记列表，右栏详情、关联待办与进度时间线；每条演示笔记的标签里都带「构造样例」，卡片右下角 <code>r3</code> 表示这条笔记在 PowerContext 中已追加 3 个修订，时间线最后一条“在读”与卡片状态一致。</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/02_search_text.png" alt="关键词检索结果，显示 PowerContext 文本检索命中记录数与命中方式标记" width="1600" height="1000">
+        <figcaption><b>关键词检索</b>：检索「LSM」时，提示行写明“PowerContext 文本检索命中 1 条记录 · 界面结果 1 条（已按当前状态折叠）”，结果卡片带 <code>text</code> / <code>client-scan</code> 命中方式标记。</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/03_filter_tags.png" alt="按标签过滤结果，显示服务端返回记录数" width="1600" height="1000">
+        <figcaption><b>标签过滤</b>：标签「RAG」由 PowerContext 服务端标签索引返回 2 条记录，折叠后可见 1 条；命中方式标为 <code>tag</code>。</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/04_provenance.png" alt="数据来源与持久化机制面板，显示 Server ID、版本、Scope、记录数与最近服务端调用" width="1600" height="1000">
+        <figcaption><b>数据来源与持久化机制</b>：真实 Server ID、包版本、API 契约 1.5、Scope、记忆 kind、记录条数，以及本次界面刷新产生的 HTTP 调用清单。</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="powercontext" class="band alt">
+    <h2>PowerContext 在项目里的实际作用</h2>
+    <p class="intro">
+      它是这个应用唯一的存储与检索层。删掉服务，界面立刻报错并拒绝写入——没有任何“本地文件顶上”的降级路径。
+    </p>
+    <div class="table-wrap">
+      <table>
+        <caption>用到的官方接口与用途</caption>
+        <thead><tr><th>接口</th><th>项目中的用途</th><th>核对方式</th></tr></thead>
+        <tbody>
+          <tr><td><code>POST /v1/scopes</code></td><td>为每个工作区建立上下文 Scope，用幂等键复用</td><td>数据来源面板显示 Scope 与幂等键；重复启动不会产生第二个 Scope</td></tr>
+          <tr><td><code>POST /v1/memory/remember</code></td><td>写入笔记 / 待办 / 进度的每一条修订（追加，不就地改写）</td><td>改一次标题，记录数 +1；旧修订仍能查回来</td></tr>
+          <tr><td><code>POST /v1/atomic-memory/list</code></td><td>界面刷新时按 kind 全量读回并折叠成当前状态；标签过滤也走这里</td><td>数据来源面板的调用表；重启后端到端脚本比对</td></tr>
+          <tr><td><code>POST /v1/atomic-memory/search</code></td><td>关键词检索（<code>mode=text</code>）</td><td>检索提示行显示服务端命中条数</td></tr>
+          <tr><td><code>GET/PUT …/artifacts/…/tags</code></td><td>把标签与关键词存到服务端标签索引，替换时强制 <code>If-Match</code></td><td>标签过滤返回记录数；并发修改会返回 412 并重试</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid three tight">
+      <article class="card">
+        <h3>8192 字节上限的真实处理</h3>
+        <p>官方 <code>remember.text</code> 上限是 8192 UTF-8 字节。写入前按“序列化后的信封”计算预算并分块，
+        读取时按 <code>chunk_index</code> 拼回，长正文有专门的测试覆盖真实字节边界。</p>
+      </article>
+      <article class="card">
+        <h3>追加式事件日志</h3>
+        <p>官方契约不允许就地改写记忆条目，所以每次修改追加一条 <code>seq</code> 递增的记录，
+        读取时按 <code>entity_id</code> 折叠。删除实现为追加 <code>op=retire</code>，历史仍可审计。</p>
+      </article>
+      <article class="card">
+        <h3>不需要模型</h3>
+        <p>部署时显式记忆抽取保持关闭（<code>atomic_memory.extract = disabled / provider_not_configured</code>），
+        读写与文本检索都是确定性能力，不配置任何模型、不产生额度消耗。</p>
+      </article>
+    </div>
+    <p class="band-note">
+      接入方式：官方仓库 <code>oceanbase/powercontext</code> 分支 <code>2026-competition-ecosystem</code>
+      （提交 <code>437aa0632</code>）构建的 wheel，版本 <code>0.1.dev1+g437aa0632.d20261118</code>，
+      以 <code>DATABASE_KIND=sqlite</code>、<code>HTTP_HOST=127.0.0.1</code>、<code>ACCESS_MODE=disabled</code>
+      启动，并带 <code>--no-env-file</code>，不加载任何凭据文件。
+    </p>
+  </section>
+
+  <section id="run" class="band">
+    <h2>运行说明（本机复现）</h2>
+    <div class="grid two">
+      <article class="card">
+        <h3>环境前置条件</h3>
+        <ul class="plain">
+          <li>WSL2（Linux 侧）+ CPython <b>&ge; 3.11 且 &lt; 4.0</b>，用 <code>--python</code> 指向你自己安装的解释器</li>
+          <li>Windows 侧 Python 3.11+ 运行应用与测试（应用只用标准库）</li>
+          <li>网络：安装依赖时需要访问 PyPI；PowerContext 本体已由仓库内 <code>vendor/</code> 的 wheel 提供</li>
+          <li>端口 2893（PowerContext）与 2894（应用）空闲</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>目录与交付独立性</h3>
+        <ul class="plain">
+          <li><code>vendor/powercontext-*.whl</code> + 许可证 + <code>requirements.powercontext.lock</code>（122 项精确版本）</li>
+          <li>脚本不写死任何绝对路径，也不依赖其他项目的解释器或 venv</li>
+          <li>数据落在 <code>.runtime/powercontext</code>，凭据文件从不被读取</li>
+        </ul>
+      </article>
+    </div>
+    <ol class="steps">
+      <li>
+        <span class="k">准备环境</span>
+        <pre><code>bash scripts/setup_pc_env.sh --python /path/to/python3.12</code></pre>
+        <p>新建自己的 venv，安装 <code>vendor/</code> 里的官方 wheel（<code>builtin,server,cli</code> extras），并重新生成依赖锁。</p>
+      </li>
+      <li>
+        <span class="k">核对锁可重放</span>
+        <pre><code>bash scripts/replay_lock.sh --python /path/to/python3.12</code></pre>
+        <p>在全新 venv 里按锁安装 122 项依赖，再装 vendored wheel，证明换目录也能装。</p>
+      </li>
+      <li>
+        <span class="k">启动 PowerContext</span>
+        <pre><code>bash scripts/start_pc.sh start
+bash scripts/start_pc.sh status</code></pre>
+        <p>服务在 127.0.0.1:2893 就绪后，<code>status</code> 会打印 server_id 与版本。</p>
+      </li>
+      <li>
+        <span class="k">启动应用</span>
+        <pre><code>PYTHONPATH=src python -m yanxi.server --port 2894</code></pre>
+        <p>浏览器打开 <code>http://127.0.0.1:2894</code>；顶栏“数据来源”可核对当前连接到的服务。</p>
+      </li>
+      <li>
+        <span class="k">灌入演示数据（可选）</span>
+        <pre><code>PYTHONPATH=src python scripts/seed_demo.py</code></pre>
+        <p>写入的是<b>构造的验证样例</b>，用于展示检索、待办与进度；不代表真实同学反馈或使用效果。</p>
+      </li>
+      <li>
+        <span class="k">跑测试与重启验证</span>
+        <pre><code>PYTHONPATH=src python -m pytest -q -rA
+PYTHONPATH=src python scripts/verify_pc.py
+PYTHONPATH=src python scripts/e2e_restart.py</code></pre>
+        <p>分别覆盖单元/接口测试、原始接口核对，以及“停止服务→重启→数据仍在”的端到端流程。</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="verify" class="band alt">
+    <h2>验证样例</h2>
+    <div class="table-wrap">
+      <table>
+        <caption>按步骤执行即可复现，结果可在界面与 PowerContext 中双向核对</caption>
+        <thead><tr><th>#</th><th>操作</th><th>预期结果</th><th>指定技术的作用证据</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>新建笔记「B+ 树与 LSM 树对比」，课程“数据库”，标签“索引、考试重点”，关键词“写放大”</td>
+            <td>提示“已写入 1 条 Atomic Memory 记录”，列表出现该卡片，卡片右下角 <code>r1</code></td>
+            <td>数据来源面板显示 <code>POST /v1/memory/remember</code> 返回 200/201</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>关键词框输入「写放大」，点检索</td>
+            <td>提示行显示服务端文本检索命中 1 条记录，卡片带 <code>text</code> 标记</td>
+            <td><code>POST /v1/atomic-memory/search</code>（mode=text）</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>标签框输入「索引」，切换“全部满足”后检索</td>
+            <td>显示服务端返回记录数，命中方式标为 <code>tag</code></td>
+            <td>标签存在服务端标签索引，过滤由 <code>list_atomic</code> 完成</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>给该笔记添加待办“手推一次分裂”，勾选完成</td>
+            <td>卡片显示“待办已清空”，待办产生两条修订记录</td>
+            <td>待办同样是 Atomic Memory，可查回 <code>seq=1、2</code></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>把状态从“未开始”切到“在读”，备注“看完 8.1”</td>
+            <td>进度时间线追加一条，笔记修订号变为 <code>r2</code></td>
+            <td>进度记录 <code>kind=yanxi.progress.v1</code> 独立可查</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>刷新页面 / 关闭再打开浏览器</td>
+            <td>条目、待办、进度全部还在</td>
+            <td>界面数据完全来自 <code>/v1/atomic-memory/list</code>，应用无缓存</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><code>bash scripts/start_pc.sh stop</code> 后再 <code>start</code></td>
+            <td>停止期间界面报错且拒绝写入；重启后条目数与记录摘要一致</td>
+            <td><code>scripts/e2e_restart.py</code> 10 步全部通过并留存 JSON 证据</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>粘贴一段超过 8192 字节的长正文并保存</td>
+            <td>提示写入多条记录，读回后正文与原文逐字一致</td>
+            <td>分块写入与 <code>chunk_index</code> 拼接由真实字节上限驱动</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="data" class="band">
+    <h2>数据与使用效果说明</h2>
+    <div class="grid two">
+      <article class="card">
+        <h3>演示数据是构造样例</h3>
+        <p>截图中的四条笔记（组会汇报骨架、文献管理、索引选择率、RAG 引用可靠性）及其标签、待办、进度备注，
+        都由 <code>scripts/seed_demo.py</code> 构造，用于展示检索、关联待办与重启恢复的完整链路。
+        <b>这些文字不是真实同学反馈，也不是提效数据。</b>界面会在进度备注与正文中保留“构造样例”标记。</p>
+      </article>
+      <article class="card">
+        <h3>目前可核对的效果证据</h3>
+        <p>项目已提交的是<b>工程可复现性</b>证据：37 项自动化测试、12 项原始接口核对、10 步重启恢复验证，
+        结果文件都在仓库 <code>qoder/evidence/</code> 下。真实用户规模与提效对比尚未开展，
+        因此本页不给出“节省多少小时”这类数字；本站点的访问统计可作为后续真实使用的起点。</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="devlog" class="band alt">
+    <h2>Qoder 在开发中的作用</h2>
+    <div class="timeline">
+      <div class="entry">
+        <span class="dot"></span>
+        <h3>需求拆解</h3>
+        <p>从官方题面提炼“必须真实使用 PowerContext、不能只做连通性检查、必须本地可复现”的硬约束，
+        并把它写成任务清单与验收口径。</p>
+      </div>
+      <div class="entry">
+        <span class="dot"></span>
+        <h3>接口勘察与架构决策</h3>
+        <p>用 CLI 与 HTTP 实测官方 wheel 的能力边界（8192 字节上限、标签替换必须 <code>If-Match</code>、
+        禁止就地改写、检索模式），据此确定“追加式事件日志 + 读取时折叠”的领域模型。</p>
+      </div>
+      <div class="entry">
+        <span class="dot"></span>
+        <h3>编码与联调</h3>
+        <p>实现 <code>pc.py</code>（类型化客户端 + 调用追踪）、<code>store.py</code>（笔记/待办/进度折叠与分块）、
+        <code>server.py</code>（标准库 HTTP 层）与三栏界面；PowerContext 故障一律返回 502 并给出可执行的排查提示，
+        绝不伪装成成功。</p>
+      </div>
+      <div class="entry">
+        <span class="dot"></span>
+        <h3>测试与修复</h3>
+        <p>先用内存替身跑通领域规则，再对真实服务跑同一批断言；修复过字节预算算错、
+        HTTP 头大小写导致取不到 ETag、同秒更新排序反转等实际问题，每项都有对应回归测试。</p>
+      </div>
+      <div class="entry">
+        <span class="dot"></span>
+        <h3>建站与材料</h3>
+        <p>用 Qoder 生成真实截图、编写运行说明与验证样例，并通过 Qoder Sites 发布本站点。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="repo" class="band">
+    <h2>仓库与许可</h2>
+    <div class="grid two">
+      <article class="card">
+        <h3>代码位置</h3>
+        <p>公开仓库 <a href="https://github.com/YHR123960/oceanbase-powercontext" rel="noopener">YHR123960/oceanbase-powercontext</a>，
+        本项目全部资产在 <code>qoder/</code> 目录，开发分支 <code>competition/qoder-productivity</code>
+        （基于官方 <code>2026-competition-ecosystem</code>）。</p>
+        <ul class="plain">
+          <li><code>qoder/src/yanxi/</code> 应用与领域层</li>
+          <li><code>qoder/web/</code> 零构建前端</li>
+          <li><code>qoder/tests/</code> 37 项测试</li>
+          <li><code>qoder/scripts/</code> 环境、启动、验证脚本</li>
+          <li><code>qoder/evidence/</code> 运行日志、截图与验证结果</li>
+          <li><code>qoder/vendor/</code> 官方 wheel 与许可证</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>依赖与许可</h3>
+        <p>应用本身只用 Python 标准库。PowerContext 以官方 wheel 形式内置于 <code>vendor/</code>，
+        许可证随文件保留；依赖版本由 <code>requirements.powercontext.lock</code> 精确锁定，
+        并注明 wheel 的 SHA-256 校验值。复用开源代码处均注明来源。</p>
+        <p class="mono-note">wheel sha256 <code>cd9ef57783eed3689b69be829003b649e0ac6c09ec05b2ed679424191de0aa14</code></p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>研习工作台 · Qoder × OceanBase 2026 大赛作品 · 界面与文档以简体中文为主</p>
+  <p class="foot-note">本站为作品展示与评审入口；完整功能需在本地按运行说明启动 PowerContext 与后体验证。</p>
+</footer>
+</body>
+</html>

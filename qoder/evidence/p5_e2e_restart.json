@@ -1,0 +1,92 @@
+{
+  "started_at": "2026-11-18 11:28:17",
+  "finished_at": "2026-11-18 11:28:32",
+  "marker": "e2e-112817",
+  "workspace": "e2e",
+  "pc_url": "http://127.0.0.1:2893",
+  "app_port": 2899,
+  "scope_id": "scp_5c6ajv9814p07kfz65yj5bk4ms",
+  "package_version": "0.1.dev1+g437aa0632.d20261118",
+  "server_id": "35a76202-1837-41d7-8a10-11bc627a0612",
+  "wheel_sha256": "cd9ef57783eed3689b69be829003b649e0ac6c09ec05b2ed679424191de0aa14",
+  "powercontext_snapshot_before": {
+    "yanxi.note.v1": "24434537c0feed4e",
+    "yanxi.note.v1::count": "5",
+    "yanxi.task.v1": "9e8f05b3e3b602fd",
+    "yanxi.task.v1::count": "2",
+    "yanxi.progress.v1": "e8a088c25480ebf2",
+    "yanxi.progress.v1::count": "1"
+  },
+  "powercontext_snapshot_after": {
+    "yanxi.note.v1": "24434537c0feed4e",
+    "yanxi.note.v1::count": "5",
+    "yanxi.task.v1": "9e8f05b3e3b602fd",
+    "yanxi.task.v1::count": "2",
+    "yanxi.progress.v1": "e8a088c25480ebf2",
+    "yanxi.progress.v1::count": "1"
+  },
+  "app_state_digest_before_restart": "82606cce4718b33c",
+  "app_state_digest_after_restart": "82606cce4718b33c",
+  "long_body_bytes": 15639,
+  "long_body_chunks": 3,
+  "steps_total": 10,
+  "steps_passed": 10,
+  "results": [
+    {
+      "name": "service_available",
+      "status": "PASS",
+      "detail": "package=0.1.dev1+g437aa0632.d20261118 server_id=35a76202-1837-41d7-8a10-11bc627a0612"
+    },
+    {
+      "name": "write_through_application",
+      "status": "PASS",
+      "detail": "2 notes created via HTTP, long note stored in 3 Atomic Memory chunks (body 15639 bytes); task closed; progress recorded"
+    },
+    {
+      "name": "readable_without_the_app",
+      "status": "PASS",
+      "detail": "PowerContext alone (scope scp_5c6ajv9814p07kfz65yj5bk4ms) answers with 2 records of this run"
+    },
+    {
+      "name": "processes_stopped",
+      "status": "PASS",
+      "detail": "app pid terminated; start_pc.sh stop -> stopped pid=8661"
+    },
+    {
+      "name": "service_really_went_down",
+      "status": "PASS",
+      "detail": "/v1/server-info after stop: connection refused"
+    },
+    {
+      "name": "service_restarted",
+      "status": "PASS",
+      "detail": "starting PowerContext: home=/mnt/d/seekdb_competition/qoder_2026/qoder/.runtime/powercontext url=http://127.0.0.1:2893 access=disabled db=sqlite"
+    },
+    {
+      "name": "powercontext_records_identical_after_restart",
+      "status": "PASS",
+      "detail": "v1=24434537c0feed4e; count=5; v1=9e8f05b3e3b602fd; count=2; v1=e8a088c25480ebf2; count=1"
+    },
+    {
+      "name": "scope_reused_after_restart",
+      "status": "PASS",
+      "detail": "idempotency_key qoder-yanxi-workbench:e2e resolved the same Scope"
+    },
+    {
+      "name": "application_state_restored",
+      "status": "PASS",
+      "detail": "long-text note reassembled byte-for-byte, progress 'reading' and the completed task came back"
+    },
+    {
+      "name": "memory_reused_for_continuation",
+      "status": "PASS",
+      "detail": "seq 3 built on the pre-restart history; timeline has 2 progress memories"
+    }
+  ],
+  "environment": {
+    "python": "3.13.3",
+    "platform": "win32",
+    "wsl_distro": "Ubuntu-22.04",
+    "bash": "D:\\Git\\usr\\bin\\bash.EXE"
+  }
+}

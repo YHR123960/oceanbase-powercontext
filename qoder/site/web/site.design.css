@@ -1,0 +1,14 @@
+:root {
+  --site-bg: #f4f6fb;
+  --site-fg: #161b26;
+  --site-accent: #2f6fed;
+  --site-on-accent: #ffffff;
+  --site-surface: #ffffff;
+  --site-muted: #63708a;
+  --site-border: #dfe4ef;
+  --site-font: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  --site-radius: 14px;
+  --site-space: 1;
+  --site-type: 1;
+  --site-motion: 1;
+}

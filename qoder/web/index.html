@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研习工作台 · 本地资料与待办</title>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>研习工作台</h1>
+    <p class="tagline">课程笔记 · 科研阅读 · 关联待办　<span class="storage">持久层：PowerContext Atomic Memory</span></p>
+  </div>
+  <div class="topbar-actions">
+    <button id="reload" class="ghost" title="丢弃界面状态，重新向 PowerContext 查询">从 PowerContext 重新读取</button>
+    <button id="toggle-provenance" class="ghost">数据来源</button>
+  </div>
+</header>
+
+<main>
+  <section class="panel composer">
+    <h2>记录一条</h2>
+    <form id="note-form">
+      <label>标题<input name="title" required placeholder="例如：康有为的孔教运动"></label>
+      <div class="row">
+        <label>课程 / 项目<input name="course" placeholder="近代史"></label>
+      </div>
+      <label>标签（逗号分隔）<input name="tags" placeholder="思想史, 孔教会"></label>
+      <label>关键词<input name="keywords" placeholder="《不忍》, 保皇"></label>
+      <label>正文<textarea name="body" rows="7" placeholder="长文会自动分块写入，单条记录受 PowerContext 8192 字节上限约束"></textarea></label>
+      <button type="submit" class="primary">保存到 PowerContext</button>
+      <p class="form-hint" id="form-hint"></p>
+    </form>
+  </section>
+
+  <section class="panel browser">
+    <div class="filters">
+      <input id="q" type="search" placeholder="关键词检索…">
+      <input id="tagf" type="text" placeholder="标签过滤，逗号分隔">
+      <select id="match">
+        <option value="any">任一标签</option>
+        <option value="all">全部标签</option>
+      </select>
+      <select id="statusf">
+        <option value="">全部进度</option>
+        <option value="unread">未开始</option>
+        <option value="reading">在读</option>
+        <option value="mastered">已掌握</option>
+      </select>
+      <button id="search" class="ghost">检索</button>
+      <button id="clear-filters" class="ghost">清除</button>
+    </div>
+    <p class="retrieval-note" id="retrieval-note"></p>
+    <ul id="note-list" class="note-list"></ul>
+  </section>
+
+  <section class="panel detail" id="detail">
+    <p class="placeholder">选择左侧任意一条笔记查看正文、进度时间线与关联待办。</p>
+  </section>
+</main>
+
+<aside class="provenance" id="provenance" hidden>
+  <div class="provenance-head">
+    <h2>数据来源与持久化机制</h2>
+    <button id="close-provenance" class="ghost">关闭</button>
+  </div>
+  <div id="provenance-body"></div>
+</aside>
+
+<div class="toast" id="toast" hidden></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

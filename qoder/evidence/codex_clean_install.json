@@ -1,0 +1,45 @@
+{
+  "time": "2026-11-18T02:54:23.853525+00:00",
+  "reviewer": "Codex",
+  "purpose": "independent install from copied sources at a different path into a fresh Linux venv",
+  "source_copy": "/home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/qoder",
+  "records": [
+    {
+      "command": [
+        "/home/yhr/seekdb_competition/minimax_sdd_2026/minimax/.venv/bin/uv",
+        "venv",
+        "--python",
+        "/home/yhr/seekdb_competition/minimax_sdd_2026/minimax/.runtime/python/cpython-3.12.16-linux-x86_64-gnu/bin/python3.12",
+        "/home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/fresh-venv"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Using CPython 3.12.16 interpreter at: /home/yhr/seekdb_competition/minimax_sdd_2026/minimax/.runtime/python/cpython-3.12.16-linux-x86_64-gnu/bin/python3.12\nCreating virtual environment at: /home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/fresh-venv\nActivate with: source /home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/fresh-venv/bin/activate\n"
+    },
+    {
+      "command": [
+        "/home/yhr/seekdb_competition/minimax_sdd_2026/minimax/.venv/bin/uv",
+        "pip",
+        "install",
+        "--python",
+        "/home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/fresh-venv/bin/python",
+        "-r",
+        "/home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/qoder/requirements.powercontext.lock",
+        "/home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/qoder/vendor/powercontext-0.1.dev1+g437aa0632.d20261118-py3-none-any.whl"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Using Python 3.12.16 environment at: /home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/fresh-venv\nResolved 123 packages in 2.20s\nPrepared 1 package in 97ms\nInstalled 123 packages in 466ms\n + aiofile==3.12.3\n + aiomysql==0.3.2\n + aiosqlite==0.22.1\n + alembic==1.20.1\n + annotated-doc==0.0.6\n + annotated-types==0.8.0\n + anthropic==2.10.0\n + anyio==4.16.0\n + apscheduler==3.11.3\n + attrs==26.1.0\n + authlib==1.9.9\n + beartype==0.23.1\n + bracex==3.2.3\n + cachetools==8.0.1\n + caio==0.12.10\n + certifi==2026.10.23\n + cffi==2.1.1\n + charset-normalizer==3.5.2\n + click==8.5.1\n + cryptography==50.0.2\n + cyclopts==5.5.2\n + dnspython==2.9.2\n + docstring-parser==0.18.0\n + email-validator==2.4.0\n + exceptiongroup==1.3.1\n + fastapi==0.163.2\n + fastmcp==3.4.11\n + fastmcp-slim==3.4.11\n + filelock==3.32.7\n + genai-prices==0.2.4\n + greenlet==3.5.6\n + griffelib==2.4.1\n + h11==0.16.0\n + httpcore==1.0.9\n + httpcore2==2.16.2\n + httpx==0.28.1\n + httpx-sse==0.4.3\n + httpx2==2.16.2\n + idna==3.20\n + inquirerpy==0.3.4\n + jaraco-classes==3.4.0\n + jaraco-context==6.1.2\n + jaraco-functools==4.6.0\n + jeepney==0.9.0\n + jieba==0.42.1\n + jinja2==3.1.6\n + jiter==0.19.0\n + joserfc==1.8.0\n + jsonref==1.1.0\n + jsonschema==4.26.0\n + jsonschema-path==0.5.0\n + jsonschema-specifications==2025.9.1\n + keyring==25.7.0\n + logfire-api==5.6.0\n + mako==1.4.3\n + markdown-it-py==4.3.0\n + markupsafe==3.0.4\n + mcp==1.30.0\n + mdurl==0.1.2\n + more-itertools==11.2.1\n + numpy==2.5.5\n + openai==3.54.0\n + openapi-pydantic==0.6.0\n + opentelemetry-api==1.45.2\n + opentelemetry-sdk==1.45.2\n + opentelemetry-semantic-conventions==0.66b2\n + orjson==3.13.0\n + packaging==26.3\n + pathable==0.6.0\n + pfzy==0.3.4\n + platformdirs==4.14.7\n + powercontext==0.1.dev1+g437aa0632.d20261118 (from file:///home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/qoder/vendor/powercontext-0.1.dev1+g437aa0632.d20261118-py3-none-any.whl)\n + prometheus-client==0.26.0\n + prompt-toolkit==3.0.53\n + psutil==7.2.2\n + py-key-value-aio==0.4.6\n + pycasbin==2.8.0\n + pycparser==3.12\n + pydantic==2.14.3\n + pydantic-ai-slim==2.70.0\n + pydantic-core==2.50.4\n + pydantic-graph==2.70.0\n + pydantic-settings==2.16.3\n + pygments==2.21.0\n + pyjwt==2.15.1\n + pymysql==1.2.0\n + pyobvector==0.2.29\n + pyperclip==1.11.0\n + python-dotenv==1.2.4\n + python-multipart==0.0.34\n + pyyaml==6.0.3\n + referencing==0.37.0\n + regex==2026.11.15\n + requests==2.34.2\n + rfc8785==0.1.4\n + rich==15.0.0\n + rich-rst==2.2.0\n + rpds-py==2026.9.1\n + scalar-fastapi==1.10.0\n + secretstorage==3.5.0\n + shellingham==1.5.4\n + simpleeval==1.0.8\n + sniffio==1.3.1\n + socksio==1.0.0\n + sqlalchemy==2.1.9\n + sqlglot==30.33.0\n + sqlite-vec==0.1.9\n + sse-starlette==3.7.0\n + starlette==1.10.0\n + tiktoken==0.14.0\n + truststore==0.10.5\n + typer==0.29.1\n + typing-extensions==4.16.0\n + typing-inspection==0.4.5\n + tzdata==2026.6\n + tzlocal==5.4.5\n + uncalled-for==0.6.1\n + urllib3==2.8.0\n + uvicorn==0.54.0\n + watchfiles==1.3.0\n + wcmatch==12.0.3\n + wcwidth==0.9.4\n + websockets==17.4\n"
+    },
+    {
+      "command": [
+        "/home/yhr/seekdb_competition/qoder-clean-check-7p0k_b6c/fresh-venv/bin/powercontext",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "0.1.dev1+g437aa0632.d20261118\n",
+      "stderr": ""
+    }
+  ],
+  "passed": true
+}

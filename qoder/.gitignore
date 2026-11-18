@@ -1,0 +1,8 @@
+.runtime/
+__pycache__/
+*.pyc
+.pytest_cache/
+evidence/_tmp/
+
+# 全局 gitignore 会排除 *.log，证据日志必须随交付提交
+!evidence/*.log

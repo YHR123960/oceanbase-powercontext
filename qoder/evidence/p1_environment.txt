@@ -1,0 +1,23 @@
+# P1 environment probe evidence
+generated_by: Qoder main agent, 2026-11-18
+
+## repo baseline
+```
+competition/qoder-productivity
+71fb1c6b9922e599399d2df993ca5d3923182ce8
+?? qoder/coordination/
+?? qoder/evidence/
+?? qoder/vendor/
+```
+
+## vendored wheel integrity
+```
+cd9ef57783eed3689b69be829003b649e0ac6c09ec05b2ed679424191de0aa14 *qoder/vendor/powercontext-0.1.dev1+g437aa0632.d20261118-py3-none-any.whl
+```
+
+## wheel metadata (subset)
+```
+Name: powercontext
+Version: 0.1.dev1+g437aa0632.d20261118
+Requires-Python: <4.0,>=3.11
+```

@@ -1,0 +1,52 @@
+{
+  "purpose": "截图来源与可复现说明（REVIEW_001 第 4 项整改后的重拍记录）",
+  "captured_at_local": "2026-11-18T11:06:00+08:00",
+  "browser": "本机安装的 Google Chrome，以 --headless=new 模式截图（Windows 侧进程，访问 WSL 暴露的 127.0.0.1 端口）",
+  "viewport": "1600x1000",
+  "chrome_flags": [
+    "--headless=new",
+    "--disable-gpu",
+    "--hide-scrollbars",
+    "--window-size=1600,1000",
+    "--virtual-time-budget=15000",
+    "--screenshot=<file>"
+  ],
+  "backend": {
+    "powercontext": "0.1.dev1+g437aa0632.d20261118",
+    "api_contract_version": { "major": 1, "minor": 5 },
+    "server_id": "673465cf-5bfe-447e-a13f-298ec38c3e31",
+    "url": "http://127.0.0.1:2893",
+    "data_home": ".runtime/capture/powercontext（全新目录，等同按 README 首次安装）",
+    "access_mode": "disabled",
+    "database_kind": "sqlite",
+    "no_env_file": true,
+    "model_configured": false
+  },
+  "app": {
+    "url": "http://127.0.0.1:2897",
+    "workspace": "default",
+    "scope_id": "scp_6eetcc51n18pwf9vjkm7gvjy00",
+    "seed": "python scripts/seed_demo.py --pc-url http://127.0.0.1:2893（seed:demo-v2，构造样例）"
+  },
+  "shots": [
+    { "file": "01_workbench_list.png", "url": "http://127.0.0.1:2897/", "shows": "四条构造样例笔记、标签含“构造样例”、进度时间线末项与卡片状态一致（在读 / r3）" },
+    { "file": "02_search_text.png", "url": "http://127.0.0.1:2897/?q=LSM", "shows": "PowerContext mode=text 命中 1 条记录，界面折叠后 1 条，命中方式 client-scan + text" },
+    { "file": "03_filter_tags.png", "url": "http://127.0.0.1:2897/?tagf=RAG", "shows": "服务端 tag:RAG（任一满足）返回 2 条记录，折叠后界面 1 条" },
+    { "file": "04_provenance.png", "url": "http://127.0.0.1:2897/?prov=1", "shows": "数据来源抽屉：契约、Scope、记录数与最近的真实 HTTP 调用" }
+  ],
+  "capture_only_helper": {
+    "what": "02/03/04 需要把关键词或标签填进搜索框并触发检索。截图用了一份只存在于 .runtime/capture/（gitignore 内）的 web/ 副本，在 index.html 末尾多加载一个 capture_shim.js：它只做“往原有输入框赋值 + 调用页面里已有的 runSearch()/showProvenance()”，等价于人手输入后点“检索”。",
+    "not_shipped": "仓库 web/app.js、web/index.html、web/styles.css 与 src/yanxi/*.py 未被改动；副本的后端文件与仓库文件 md5 完全一致。",
+    "checksums_shipped": {
+      "src/yanxi/__init__.py": "22d64bf5edd3b8d55590b21202b24317",
+      "src/yanxi/pc.py": "2522cf1d69132f940c6428020df22c58",
+      "src/yanxi/server.py": "c91ae7bf7492db30d0a17631a72e220b",
+      "src/yanxi/store.py": "769e69e542178af05617a08d6387a792",
+      "web/app.js": "490aa0af44cda4d2310c202e62362297",
+      "web/index.html": "2c49f67e00509fe20b7101fa927c8c0f",
+      "web/styles.css": "b045aa6acfad488afacb0b273250e852"
+    }
+  },
+  "data_home_note": "截图完成后，README 里的默认 home（.runtime/powercontext）也按同一脚本全新初始化并灌入 seed:demo-v2（Scope=scp_0rajg02njhthh1d6w7a56nj88d，数据集与上表一致，仅 Scope/时间戳不同）；旧版演示数据 home 保留在 .runtime/powercontext-v1-archive，未删除。",
+  "content_policy_note": "演示笔记与进度备注全部是为本仓库构造的验证样例，正文首行与标签均写明“构造样例，非真实反馈”，不作为真实同学反馈或提效数据使用。"
+}

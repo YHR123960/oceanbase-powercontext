@@ -1,0 +1,29 @@
+{
+  "time": "2026-11-18T02:39:32.238621+00:00",
+  "state": "paused_for_windows_unlock",
+  "communication": "Verified QODER_ACK_20261118 via Computer Use; primary implementation performed in Qoder",
+  "qoder_conversation": "1b6cadcd-cd09-4116-be21-9787a471752e",
+  "repository": "https://github.com/YHR123960/oceanbase-powercontext",
+  "branch": "competition/qoder-productivity",
+  "baseline": "71fb1c6b9922e599399d2df993ca5d3923182ce8",
+  "independent_tests": {
+    "passed": 34,
+    "skipped": 0,
+    "evidence": "evidence/codex_independent_tests.json"
+  },
+  "qoder_latest_regression_report": {
+    "passed": 37,
+    "note": "After same-second timeline and record-count fixes; pending final independent recheck"
+  },
+  "powercontext_contract_checks": 12,
+  "process_restart_checks": 10,
+  "sites_url": null,
+  "pending": [
+    "finish clean install replay and review",
+    "Qoder Sites publication and logged-out verification",
+    "Qoder UID and development evidence",
+    "final tests and secret scan",
+    "Git commit and repository integration"
+  ],
+  "blocker": "Windows lock screen: black Qoder capture, LockApp and LogonUI observed. No UI input after detection."
+}

@@ -1,0 +1,72 @@
+{
+  "run_id": "20261118-112815",
+  "url": "http://127.0.0.1:2893",
+  "scope_id": "scp_231kd7myj7ax66s9chtzt3v8ck",
+  "server_package_version": "0.1.dev1+g437aa0632.d20261118",
+  "server_id": "35a76202-1837-41d7-8a10-11bc627a0612",
+  "checks_total": 12,
+  "checks_passed": 12,
+  "results": [
+    {
+      "name": "server_identity",
+      "status": "PASS",
+      "detail": "product=powercontext package_version=0.1.dev1+g437aa0632.d20261118 api_contract={'major': 1, 'minor': 5} server_id=35a76202-1837-41d7-8a10-11bc627a0612"
+    },
+    {
+      "name": "explicit_memory_contract_present",
+      "status": "PASS",
+      "detail": "feature_contracts=[['access.principal', 'connection.identity', 'memory.explicit', 'scope.selection']]"
+    },
+    {
+      "name": "runs_without_any_model",
+      "status": "PASS",
+      "detail": "atomic_memory.extract status=disabled reason=provider_not_configured (explicit Atomic Memory writes need no generation model)"
+    },
+    {
+      "name": "scope_idempotency",
+      "status": "PASS",
+      "detail": "scope_id=scp_231kd7myj7ax66s9chtzt3v8ck reused on the same idempotency_key (version=1)"
+    },
+    {
+      "name": "atomic_memory_write_readback",
+      "status": "PASS",
+      "detail": "returned 1 record(s) artifact.family=atomic-memory artifact_id=art_8cd63069241b474d9f78854d3df25ef0 revision=1 state=active"
+    },
+    {
+      "name": "read_back_by_kind",
+      "status": "PASS",
+      "detail": "list_atomic(kind=yanxi.verify.note.v1) returned 1 active record(s)"
+    },
+    {
+      "name": "cursor_pagination_complete",
+      "status": "PASS",
+      "detail": "limit=5 walked 3 pages and yielded 12 records; client helper with limit=100 yielded 12 records (no silent truncation)"
+    },
+    {
+      "name": "server_side_tag_retrieval",
+      "status": "PASS",
+      "detail": "PowerContext stored and filtered labels: stored=['course:数据库', 'topic:index', '状态:未完成'] tag_match=all(2 tags) -> 1 hit(s), unknown tag -> 0 hit(s)"
+    },
+    {
+      "name": "server_side_text_search",
+      "status": "PASS",
+      "detail": "mode=text hits=1 matched_by=['text'] score=0.01639344262295082"
+    },
+    {
+      "name": "failures_propagate_not_faked",
+      "status": "PASS",
+      "detail": "empty text -> HTTP 422 (code=invalid_request); 15000-byte text (limit 8192) -> HTTP 422; unknown scope -> HTTP 404. All raised as PCError instead of returning an empty success."
+    },
+    {
+      "name": "chunking_respects_byte_limit",
+      "status": "PASS",
+      "detail": "long text split into 2 chunk(s), each <= 7600 UTF-8 bytes, lossless when rejoined"
+    },
+    {
+      "name": "records_stable_across_reconnect",
+      "status": "PASS",
+      "detail": "re-read 12 records from SQLite home; run scripts/e2e_restart.py for the full process stop/start durability proof"
+    }
+  ],
+  "pc_calls_traced": 30
+}

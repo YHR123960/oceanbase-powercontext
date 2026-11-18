@@ -1,0 +1,83 @@
+.....................................                                    [100%]
+=================================== PASSES ====================================
+_____________________ test_health_reports_the_real_server _____________________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "GET /api/health HTTP/1.1" 200 -
+_____________________ test_create_read_update_delete_flow _____________________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "POST /api/notes HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/state HTTP/1.1" 200 -
+127.0.0.1 - "PATCH /api/notes/note_29238b0c68aa HTTP/1.1" 200 -
+127.0.0.1 - "POST /api/tasks HTTP/1.1" 200 -
+127.0.0.1 - "POST /api/tasks/task_1511ac41db0a/done HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/state HTTP/1.1" 200 -
+127.0.0.1 - "DELETE /api/notes/note_29238b0c68aa HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/state HTTP/1.1" 200 -
+__________________ test_validation_errors_are_400_with_codes __________________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "POST /api/notes HTTP/1.1" 400 -
+127.0.0.1 - "POST /api/notes/missing/status HTTP/1.1" 400 -
+_______________________ test_malformed_json_is_rejected _______________________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "POST /api/notes HTTP/1.1" 400 -
+____________ test_powercontext_failure_is_502_never_a_fake_success ____________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "POST /api/notes HTTP/1.1" 502 -
+127.0.0.1 - "GET /api/state HTTP/1.1" 200 -
+___________________ test_search_endpoint_exposes_provenance ___________________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "POST /api/notes HTTP/1.1" 200 -
+127.0.0.1 - "POST /api/notes HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/search?q=HNSW HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/search?q=&tags=tag%3AANN HTTP/1.1" 200 -
+________________________ test_pc_diagnostics_endpoint _________________________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "GET /api/pc HTTP/1.1" 200 -
+_____________ test_unknown_route_and_static_traversal_are_blocked _____________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "GET /api/nope HTTP/1.1" 404 -
+127.0.0.1 - "GET /static/../../../etc/passwd HTTP/1.1" 404 -
+127.0.0.1 - "GET /static/%2e%2e/%2e%2e/pc.py HTTP/1.1" 404 -
+127.0.0.1 - "GET /static/conftest.py HTTP/1.1" 404 -
+__________________________ test_index_page_is_served __________________________
+---------------------------- Captured stderr call -----------------------------
+127.0.0.1 - "GET / HTTP/1.1" 200 -
+=========================== short test summary info ===========================
+PASSED tests/test_live_powercontext.py::test_real_scope_creation_is_idempotent
+PASSED tests/test_live_powercontext.py::test_note_survives_a_second_client
+PASSED tests/test_live_powercontext.py::test_long_body_actually_splits_on_the_real_byte_limit
+PASSED tests/test_live_powercontext.py::test_server_side_tag_filter_and_text_search_are_used
+PASSED tests/test_live_powercontext.py::test_labels_are_readable_back_from_the_server
+PASSED tests/test_live_powercontext.py::test_progress_timeline_and_task_flow_on_real_memory
+PASSED tests/test_live_powercontext.py::test_same_second_status_changes_order_by_revision_on_the_server
+PASSED tests/test_live_powercontext.py::test_delete_keeps_the_memory_auditable
+PASSED tests/test_live_powercontext.py::test_diagnostics_report_the_real_deployment
+PASSED tests/test_server_api.py::test_health_reports_the_real_server
+PASSED tests/test_server_api.py::test_create_read_update_delete_flow
+PASSED tests/test_server_api.py::test_validation_errors_are_400_with_codes
+PASSED tests/test_server_api.py::test_malformed_json_is_rejected
+PASSED tests/test_server_api.py::test_powercontext_failure_is_502_never_a_fake_success
+PASSED tests/test_server_api.py::test_search_endpoint_exposes_provenance
+PASSED tests/test_server_api.py::test_pc_diagnostics_endpoint
+PASSED tests/test_server_api.py::test_unknown_route_and_static_traversal_are_blocked
+PASSED tests/test_server_api.py::test_index_page_is_served
+PASSED tests/test_store.py::test_scope_is_created_once_and_reused
+PASSED tests/test_store.py::test_note_roundtrip_is_powercontext_only
+PASSED tests/test_store.py::test_labels_live_in_powercontext_not_the_app
+PASSED tests/test_store.py::test_long_note_is_chunked_under_the_server_byte_limit_and_rejoined
+PASSED tests/test_store.py::test_oversized_body_is_rejected_before_write
+PASSED tests/test_store.py::test_blank_title_is_rejected
+PASSED tests/test_store.py::test_update_appends_a_revision_and_keeps_history
+PASSED tests/test_store.py::test_status_change_records_progress_and_unchanged_status_does_not
+PASSED tests/test_store.py::test_same_second_updates_order_by_note_revision
+PASSED tests/test_store.py::test_record_counts_separate_memories_from_visible_items
+PASSED tests/test_store.py::test_unknown_status_is_rejected
+PASSED tests/test_store.py::test_bad_note_id_returns_404_not_empty_success
+PASSED tests/test_store.py::test_tasks_attach_to_notes_and_count_open_items
+PASSED tests/test_store.py::test_retiring_hides_without_destroying_the_memory
+PASSED tests/test_store.py::test_search_reports_powercontext_as_the_source
+PASSED tests/test_store.py::test_tag_filtering_uses_the_server_side_label_index
+PASSED tests/test_store.py::test_empty_search_lists_everything
+PASSED tests/test_store.py::test_powercontext_outage_surfaces_as_an_error
+PASSED tests/test_store.py::test_reload_returns_the_same_state_from_a_second_client
+PYTEST_EXIT=0

@@ -1,0 +1,8 @@
+Python 3.12.16
++ /mnt/d/seekdb_competition/qoder_2026/qoder/.runtime/replay-venv/bin/python -m pip install --quiet --upgrade pip
++ /mnt/d/seekdb_competition/qoder_2026/qoder/.runtime/replay-venv/bin/python -m pip install --quiet -r /mnt/d/seekdb_competition/qoder_2026/qoder/requirements.powercontext.lock
++ /mnt/d/seekdb_competition/qoder_2026/qoder/.runtime/replay-venv/bin/python -m pip install --quiet '/mnt/d/seekdb_competition/qoder_2026/qoder/vendor/powercontext-0.1.dev1+g437aa0632.d20261118-py3-none-any.whl[builtin,server,cli]'
++ set +x
+0.1.dev1+g437aa0632.d20261118
+replay OK: 122 pinned dependencies + powercontext-0.1.dev1+g437aa0632.d20261118-py3-none-any.whl
+SCRIPT_EXIT=0
