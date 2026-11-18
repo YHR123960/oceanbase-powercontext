@@ -46,7 +46,10 @@
 d647275  chore: initialize 2026 competition ecosystem directories   ← 官方 2026-competition-ecosystem HEAD
 9f9d38c  feat(stepfun): complete mini knowledge base ...            ← 作品主提交
 7a36999  docs(stepfun): record commit history reference ...         ← 文档 SHA 回填
+05dd53d  docs(stepfun): add official submission checklist ...       ← 提交规范核对与证据整理
 ```
+
+上述为稳定的作品里程碑提交；最新提交（含本文件后续修订）以 `git rev-parse HEAD` 为准。
 
 核验命令与期望结果：
 
