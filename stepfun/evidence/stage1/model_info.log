@@ -1,0 +1,24 @@
+=== Embedding 模型核验 ===
+来源: https://huggingface.co/Xenova/all-MiniLM-L6-v2 (经 hf-mirror.com 镜像下载)
+基础模型: sentence-transformers/all-MiniLM-L6-v2
+许可证: apache-2.0
+维度: 384 (config.json hidden_size)
+model_type: bert, max_position_embeddings: 512
+Repo SHA: 751bff37182d3f1213fa05d7196b954e230abad9
+量化: ONNX INT8 (QuantizedFp? default dynamic quantization, model_quantized.onnx)
+
+=== 真实文件体积 ===
+config.json                 650 B
+tokenizer.json              711,661 B
+tokenizer_config.json       366 B
+special_tokens_map.json     125 B
+onnx/model.onnx (FP32)      90,387,606 B  (86.2 MiB)
+onnx/model_quantized.onnx   22,972,370 B  (21.9 MiB, INT8)
+
+压缩比 = 90,387,606 / 22,972,370 = 3.935x
+体积减少 = 74.6%
+
+=== npm 安装 ===
+npm install seekdb@1.4.0 -> 失败 EUNSUPPORTEDPROTOCOL workspace:*
+npm install seekdb@1.4.0 --legacy-peer-deps -> 成功 (added 13 packages)
+原生库: @seekdb/js-bindings@1.4.0 下载 win32-x64 二进制 ~331MB 到 ~/.seekdb/bindings

@@ -1,0 +1,16 @@
+{
+  "name": "stepfun-mini-kb-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local Node.js API service: seeks vector storage and DB-side hybrid search via seekdb-js. Embeddings are computed in the browser, never here.",
+  "scripts": {
+    "start": "node src/server.js",
+    "init": "node src/init-db.js"
+  },
+  "dependencies": {
+    "express": "4.21.2",
+    "cors": "2.8.5",
+    "seekdb": "1.4.0"
+  }
+}

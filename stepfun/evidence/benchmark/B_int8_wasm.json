@@ -1,0 +1,143 @@
+{
+  "config": "B_int8_wasm",
+  "model": {
+    "name": "all-MiniLM-L6-v2",
+    "baseModel": "sentence-transformers/all-MiniLM-L6-v2",
+    "license": "apache-2.0",
+    "dimension": 384,
+    "dtype": "q8",
+    "quantization": "ONNX INT8 (dynamic quantization)",
+    "device": "wasm",
+    "deviceVerified": true,
+    "detail": "WASM device 加载并实际推理成功"
+  },
+  "metrics": {
+    "modelLoadMs": 1145,
+    "firstInferMs": 11,
+    "warmInferMsMedian": 9,
+    "docEmbedMsMedian": 597,
+    "throughputDocsPerSec": 40.2,
+    "dbWriteMsMedian": 34,
+    "indexRefreshMsMedian": 336,
+    "queryEmbedMsMedian": 14.5,
+    "seekdbSearchMsMedian": 10.5,
+    "e2eQueryMsMedian": 22,
+    "recall@1": 0.4653,
+    "recall@5": 0.6806,
+    "ndcg@5": 0.7428
+  },
+  "raw": {
+    "warmMs": [
+      10,
+      9,
+      10,
+      8,
+      9
+    ],
+    "docEmbedMs": [
+      461,
+      530,
+      644,
+      597,
+      613
+    ],
+    "writeMs": [
+      182,
+      34,
+      33,
+      32,
+      41
+    ],
+    "refreshMs": [
+      426,
+      426,
+      336,
+      323,
+      306
+    ],
+    "queryEmbedMs": [
+      13,
+      17,
+      16,
+      12,
+      15,
+      16,
+      15,
+      13,
+      14,
+      10,
+      12,
+      16
+    ],
+    "searchMs": [
+      11,
+      13,
+      10,
+      10,
+      11,
+      10,
+      13,
+      9,
+      11,
+      10,
+      12,
+      10
+    ],
+    "e2eMs": [
+      23,
+      24,
+      22,
+      21,
+      22,
+      21,
+      23,
+      21,
+      22,
+      22,
+      24,
+      21
+    ],
+    "recalls1": [
+      0.3333333333333333,
+      0.25,
+      0.3333333333333333,
+      0.5,
+      0.5,
+      0.5,
+      0.3333333333333333,
+      0.5,
+      0.5,
+      0.3333333333333333,
+      0.5,
+      1
+    ],
+    "recalls5": [
+      0.3333333333333333,
+      0.5,
+      0.3333333333333333,
+      1,
+      1,
+      0.5,
+      0.6666666666666666,
+      1,
+      0.5,
+      0.3333333333333333,
+      1,
+      1
+    ],
+    "ndcg5": [
+      0.46927872602275644,
+      0.6366824387328317,
+      0.46927872602275644,
+      1,
+      1,
+      0.6131471927654584,
+      0.7653606369886217,
+      1,
+      0.6131471927654584,
+      0.46927872602275644,
+      0.8772153153380493,
+      1
+    ]
+  }
+}

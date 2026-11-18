@@ -1,0 +1,13 @@
+PASS 导入知识库A(2条)
+PASS 导入知识库B(1条)
+PASS 切换后A文档数=2
+PASS 切换后B文档数=1
+PASS B检索不串A数据
+PASS B检索结果kb均为beta
+PASS A检索不串B数据
+PASS B增量导入(+1)
+PASS 增量后B文档数=2
+PASS 索引刷新后新文档可检索
+PASS 切回A状态正确(=2)
+
+SUMMARY pass=11 fail=0

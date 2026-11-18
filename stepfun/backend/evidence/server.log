@@ -1,0 +1,22 @@
+[2026-11-18T01:45:45.570Z] SERVER_BOOT {"port":8787}
+[2026-11-18T01:45:45.599Z] LISTENING {"port":8787}
+[2026-11-18T01:47:44.755Z] SERVER_BOOT {"port":8787}
+[2026-11-18T01:47:48.258Z] SERVER_READY {"port":8787,"initMs":3467}
+[2026-11-18T01:49:10.429Z] SERVER_BOOT {"port":8787}
+[2026-11-18T01:49:14.196Z] SERVER_READY {"port":8787,"initMs":3729}
+[2026-11-18T01:49:37.827Z] SERVER_BOOT {"port":8791}
+[2026-11-18T01:49:37.955Z] FATAL {"error":"database already opened in this process (pid file locked)"}
+[2026-11-18T01:50:08.896Z] SERVER_BOOT {"port":8787}
+[2026-11-18T01:50:12.618Z] SERVER_READY {"port":8787,"initMs":3690}
+[2026-11-18T01:54:18.011Z] SERVER_BOOT {"port":8787}
+[2026-11-18T01:54:18.042Z] LISTENING {"port":8787}
+[2026-11-18T01:54:22.244Z] SERVER_READY {"initMs":3958,"dbDir":"D:\\OceanBase_WorkBuddy\\StepFun_2026\\stepfun\\backend\\data\\seekdb","dimension":384}
+[2026-11-18T01:58:38.421Z] SERVER_BOOT {"port":8787}
+[2026-11-18T01:58:38.451Z] LISTENING {"port":8787}
+[2026-11-18T01:58:42.480Z] SERVER_READY {"initMs":3804,"dbDir":"D:\\OceanBase_WorkBuddy\\StepFun_2026\\stepfun\\backend\\data\\seekdb","dimension":384}
+[2026-11-18T01:59:02.635Z] API_ERR_ADD {"error":"Duplicated primary key (ret=-5024)"}
+[2026-11-18T01:59:02.647Z] API_ERR_ADD {"error":"Duplicated primary key (ret=-5024)"}
+[2026-11-18T01:59:02.658Z] API_ERR_ADD {"error":"Duplicated primary key (ret=-5024)"}
+[2026-11-18T02:00:04.229Z] SERVER_BOOT {"port":8787}
+[2026-11-18T02:00:04.256Z] LISTENING {"port":8787}
+[2026-11-18T02:00:09.625Z] SERVER_READY {"initMs":5172,"dbDir":"D:\\OceanBase_WorkBuddy\\StepFun_2026\\stepfun\\backend\\data\\seekdb","dimension":384}

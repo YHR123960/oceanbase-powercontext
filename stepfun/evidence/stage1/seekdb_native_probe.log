@@ -1,0 +1,11 @@
+2026-11-18T01:22:32.317Z start
+2026-11-18T01:22:32.401Z addon_ready
+2026-11-18T01:22:35.273Z OPEN_OK
+2026-11-18T01:22:35.316Z CONNECT_OK
+2026-11-18T01:22:35.326Z SELECT1 {"columns":["x"],"rows":[[1]]}
+2026-11-18T01:22:35.408Z CREATEDB {"columns":[],"rows":[]}
+2026-11-18T01:22:35.413Z CONNECT_APPDB_OK
+2026-11-18T01:22:35.626Z CREATETABLE {"columns":[],"rows":[]}
+2026-11-18T01:22:35.665Z INSERT {"columns":[],"rows":[]}
+2026-11-18T01:22:35.679Z SELECT {"columns":["id","doc","kb"],"rows":[["d1","seekdb fast vector","A"]]}
+2026-11-18T01:22:35.682Z ALL_DONE

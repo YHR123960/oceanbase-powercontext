@@ -1,0 +1,54 @@
+
+=== running A_fp32_wasm ===
+WEBGPU_PROBE {"available":false,"detail":"navigator.gpu.requestAdapter() 返回 null"}
+{
+  "modelLoadMs": 1566,
+  "firstInferMs": 19,
+  "warmInferMsMedian": 15,
+  "docEmbedMsMedian": 1138,
+  "throughputDocsPerSec": 21.09,
+  "dbWriteMsMedian": 35,
+  "indexRefreshMsMedian": 315,
+  "queryEmbedMsMedian": 21,
+  "seekdbSearchMsMedian": 10,
+  "e2eQueryMsMedian": 21,
+  "recall@1": 0.4653,
+  "recall@5": 0.7083,
+  "ndcg@5": 0.7596
+}
+
+=== running B_int8_wasm ===
+{
+  "modelLoadMs": 1145,
+  "firstInferMs": 11,
+  "warmInferMsMedian": 9,
+  "docEmbedMsMedian": 597,
+  "throughputDocsPerSec": 40.2,
+  "dbWriteMsMedian": 34,
+  "indexRefreshMsMedian": 336,
+  "queryEmbedMsMedian": 14.5,
+  "seekdbSearchMsMedian": 10.5,
+  "e2eQueryMsMedian": 22,
+  "recall@1": 0.4653,
+  "recall@5": 0.6806,
+  "ndcg@5": 0.7428
+}
+
+=== running C_int8_auto ===
+{
+  "modelLoadMs": 1089,
+  "firstInferMs": 12,
+  "warmInferMsMedian": 10,
+  "docEmbedMsMedian": 596,
+  "throughputDocsPerSec": 40.27,
+  "dbWriteMsMedian": 35,
+  "indexRefreshMsMedian": 327,
+  "queryEmbedMsMedian": 14,
+  "seekdbSearchMsMedian": 9.5,
+  "e2eQueryMsMedian": 20.5,
+  "recall@1": 0.4653,
+  "recall@5": 0.6389,
+  "ndcg@5": 0.709
+}
+
+DONE results written to benchmark/results.json

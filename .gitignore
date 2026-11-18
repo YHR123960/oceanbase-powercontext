@@ -1,0 +1,27 @@
+# 依赖
+node_modules/
+**/node_modules/
+
+# 构建产物
+frontend/dist/
+**/dist/
+
+# seekdb 数据库数据目录（运行时生成，体积大，不提交；用 npm run init 重建）
+**/backend/data/
+stepfun/backend/data/
+
+# 运行时临时日志（evidence/ 下的测试证据日志需要提交，故用 ! 例外）
+*.log
+!stepfun/evidence/**/*.log
+!stepfun/backend/evidence/*.log
+backend/stdout.log
+
+# 模型二进制文件较大，单独说明：优先从镜像下载（见 README），
+# 若需离线交付可取消下面两行的注释并提交 public/models。
+# frontend/public/models/**/*.onnx
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.tmp
+*.tsbuildinfo

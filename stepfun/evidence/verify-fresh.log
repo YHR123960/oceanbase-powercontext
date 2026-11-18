@@ -1,0 +1,36 @@
+=== 干净环境复现检查 ===
+时间: 2026-11-18T02:22:53.076Z
+Node: v22.22.2
+工作目录: D:\OceanBase_WorkBuddy\StepFun_2026\stepfun
+PASS 目录存在 frontend
+PASS 目录存在 backend
+PASS 目录存在 scripts
+PASS 目录存在 tests
+PASS 目录存在 benchmark
+PASS 目录存在 evidence
+PASS 目录存在 frontend/public/models/all-MiniLM-L6-v2
+PASS 目录存在 frontend/public/ort
+PASS 文档存在 README.md
+PASS 文档存在 TECHNICAL_OVERVIEW.md
+PASS 文档存在 PROGRESS.md
+PASS 模型文件 config.json
+PASS 模型文件 tokenizer.json
+PASS 模型文件 tokenizer_config.json
+PASS 模型文件 special_tokens_map.json
+PASS 模型文件 onnx/model_quantized.onnx
+PASS 模型文件 onnx/model.onnx
+PASS ORT文件 ort-wasm-simd-threaded.asyncify.wasm
+PASS ORT文件 ort-wasm-simd-threaded.asyncify.mjs
+PASS 禁止远程模型 allowRemoteModels=false
+PASS 本地ORT wasmPaths配置
+PASS seekdb embeddingFunction=null
+PASS 数据库端hybridSearch
+PASS Node端无console.log日志
+PASS 依赖 @huggingface/transformers
+PASS 依赖 react
+PASS 依赖 seekdb
+PASS 依赖 express
+PASS 前端已构建(dist/index.html)
+PASS API服务健康
+
+SUMMARY pass=30 fail=0
