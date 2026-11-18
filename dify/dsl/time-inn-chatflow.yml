@@ -1,0 +1,383 @@
+app:
+  description: 时空旅店·夜班前台——AI 店小二阿灯用 PowerContext 记住每位住客，新会话认出老客人并延续剧情。
+  icon: 🏨
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 时空旅店·夜班前台
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.1.5
+workflow:
+  conversation_variables: []
+  environment_variables:
+    - description: PowerContext HTTP 服务地址，部署后按实际地址修改（不要写入真实密钥）
+      id: env-powercontext-base
+      name: POWERCONTEXT_BASE_URL
+      selector:
+        - env
+        - POWERCONTEXT_BASE_URL
+      value: http://localhost:8000
+      value_type: string
+  features:
+    file_upload:
+      allowed_file_methods: []
+      allowed_file_types: []
+      enabled: false
+    opening_statement: 欢迎来到时空旅店。请先在「住客代号」里写下你的名字，再告诉我你想做什么——这家旅店会记住你的一切。
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+      - data:
+          isInIteration: false
+          sourceType: start
+          targetType: http-request
+        id: edge-start-search
+        source: start
+        sourceHandle: source
+        target: http_search_memory
+        targetHandle: target
+        type: smoothstep
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: http-request
+          targetType: code
+        id: edge-search-parse
+        source: http_search_memory
+        sourceHandle: source
+        target: code_parse_memory
+        targetHandle: target
+        type: smoothstep
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: code
+          targetType: llm
+        id: edge-parse-frontdesk
+        source: code_parse_memory
+        sourceHandle: source
+        target: llm_frontdesk
+        targetHandle: target
+        type: smoothstep
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: llm
+          targetType: llm
+        id: edge-frontdesk-extract
+        source: llm_frontdesk
+        sourceHandle: source
+        target: llm_extract_memory
+        targetHandle: target
+        type: smoothstep
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: llm
+          targetType: http-request
+        id: edge-extract-save
+        source: llm_extract_memory
+        sourceHandle: source
+        target: http_save_memory
+        targetHandle: target
+        type: smoothstep
+        zIndex: 0
+      - data:
+          isInIteration: false
+          sourceType: http-request
+          targetType: answer
+        id: edge-save-answer
+        source: http_save_memory
+        sourceHandle: source
+        target: answer_reply
+        targetHandle: target
+        type: smoothstep
+        zIndex: 0
+    nodes:
+      - data:
+          selected: false
+          title: 开始
+          type: start
+          variables:
+            - label: 住客代号
+              max_length: 48
+              options: []
+              required: true
+              type: text-input
+              variable: guest_id
+        height: 92
+        id: start
+        position:
+          x: 60
+          y: 300
+        positionAbsolute:
+          x: 60
+          y: 300
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          authorization:
+            config: null
+            type: no-auth
+          body:
+            data: >-
+              {"scope_id": "{{#start.guest_id#}}", "query": "{{#sys.query#}}", "limit": 6}
+            type: json
+          headers: 'Content-Type:application/json'
+          method: post
+          params: ''
+          retry_config:
+            max_retries: 2
+            retry_enabled: true
+            retry_interval: 1000
+            retry_method: fixed
+          selected: false
+          timeout:
+            max_connect_timeout: 0
+            max_read_timeout: 0
+            max_write_timeout: 0
+            connect: 10
+            read: 30
+            write: 30
+          title: 查询旅店档案（PowerContext 记忆检索）
+          type: http-request
+          url: '{{#env.POWERCONTEXT_BASE_URL#}}/v1/memory/search'
+          variables: []
+        height: 118
+        id: http_search_memory
+        position:
+          x: 360
+          y: 300
+        positionAbsolute:
+          x: 360
+          y: 300
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          code: "import json\n\ndef main(http_body: str) -> dict:\n    \"\"\"Parse PowerContext /v1/memory/search response into a compact summary.\n\n    Any failure degrades to an empty summary so the chatflow keeps running.\n    \"\"\"\n    try:\n        data = json.loads(http_body or \"{}\")\n        hits = data.get(\"hits\") or []\n        lines = []\n        for h in hits[:6]:\n            if not isinstance(h, dict):\n                continue\n            t = str(h.get(\"text\") or \"\").strip()\n            if t:\n                lines.append(\"- \" + t)\n        return {\"summary\": \"\\n\".join(lines), \"has_memory\": \"yes\" if lines else \"no\"}\n    except Exception:\n        return {\"summary\": \"\", \"has_memory\": \"no\"}\n"
+          code_language: python3
+          outputs:
+            has_memory:
+              type: string
+            summary:
+              type: string
+          selected: false
+          title: 整理档案记录
+          type: code
+          variables:
+            - value_selector:
+                - http_search_memory
+                - body
+              variable: http_body
+        height: 160
+        id: code_parse_memory
+        position:
+          x: 660
+          y: 300
+        positionAbsolute:
+          x: 660
+          y: 300
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          completion_params:
+            temperature: 0.8
+          context:
+            enabled: false
+            variable_selector: []
+          model:
+            completion_params:
+              temperature: 0.8
+            mode: chat
+            name: gpt-4o-mini
+            provider: langgenius/openai/openai
+          prompt_template:
+            - role: system
+              text: >-
+                你是「时空旅店·夜班前台」的店小二阿灯。旅店开在时空裂缝里，客人来自各个年代与世界观。你的职责是接待住客、推进剧情、让每位客人被记住。
+
+
+                【住客代号】{{#start.guest_id#}}
+
+
+                【旅店档案中关于这位住客的既有记录】
+
+                {{#code_parse_memory.summary#}}
+
+
+                （若上方记录为空，说明这是一位新住客，请自然地询问称呼与来意，完成登记。）
+
+
+                【表演规则】
+
+                1. 全程用中文，回复不超过 250 字，有画面感、带一点奇幻与幽默。
+
+                2. 若档案有记录：自然地"认出"这位老客人，并至少引用一条过去的记录（上次的选择、喜好或发生在 TA 身上的事件）。
+
+                3. 每一轮推进一点剧情：旅店里会发生一件由你即兴创作的小怪事（异响、消失的行李、会说话的门牌……），请住客做出选择或回应。
+
+                4. 永远不要说出"档案""系统""数据库""记忆检索"这类词——你是真的记得客人，不是在查资料。
+
+                5. 回复结尾留下一个明确的互动钩子（一个问题或二选一），等待住客回应。
+
+
+                【住客本轮输入】
+
+                {{#sys.query#}}
+          selected: false
+          title: 前台阿灯回应
+          type: llm
+          variables: []
+          vision:
+            enabled: false
+        height: 240
+        id: llm_frontdesk
+        position:
+          x: 960
+          y: 300
+        positionAbsolute:
+          x: 960
+          y: 300
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          completion_params:
+            temperature: 0.2
+          context:
+            enabled: false
+            variable_selector: []
+          model:
+            completion_params:
+              temperature: 0.2
+            mode: chat
+            name: gpt-4o-mini
+            provider: langgenius/openai/openai
+          prompt_template:
+            - role: system
+              text: >-
+                你是旅店档案管理员。从下面这段前台对话中提炼 1 条最值得长期记住的事实，供下次接待这位住客时回忆。
+
+
+                要求：
+
+                1. 只输出一行纯文本，第三人称，以住客代号开头，不超过 60 个字。
+
+                2. 不要出现英文双引号、反斜杠或换行。
+
+                3. 只记录确实发生的信息（喜好、选择、关键事件、自称的身份），不要编造。
+
+                4. 如果本轮没有值得记住的信息（例如只是寒暄），只输出：本轮无新增信息
+
+
+                【住客代号】{{#start.guest_id#}}
+
+
+                【住客输入】{{#sys.query#}}
+
+
+                【前台回复】{{#llm_frontdesk.text#}}
+          selected: false
+          title: 提炼本轮记忆
+          type: llm
+          variables: []
+          vision:
+            enabled: false
+        height: 240
+        id: llm_extract_memory
+        position:
+          x: 1260
+          y: 300
+        positionAbsolute:
+          x: 1260
+          y: 300
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          authorization:
+            config: null
+            type: no-auth
+          body:
+            data: >-
+              {"scope_id": "{{#start.guest_id#}}", "kind": "guest_story", "text": "{{#llm_extract_memory.text#}}", "reason": "auto saved by dify chatflow after one stay interaction"}
+            type: json
+          headers: 'Content-Type:application/json'
+          method: post
+          params: ''
+          retry_config:
+            max_retries: 2
+            retry_enabled: true
+            retry_interval: 1000
+            retry_method: fixed
+          selected: false
+          timeout:
+            max_connect_timeout: 0
+            max_read_timeout: 0
+            max_write_timeout: 0
+            connect: 10
+            read: 30
+            write: 30
+          title: 写入旅店档案（PowerContext 记忆保存）
+          type: http-request
+          url: '{{#env.POWERCONTEXT_BASE_URL#}}/v1/memory/remember'
+          variables: []
+        height: 118
+        id: http_save_memory
+        position:
+          x: 1560
+          y: 300
+        positionAbsolute:
+          x: 1560
+          y: 300
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          answer: "{{#llm_frontdesk.text#}}\n\n🕯️ *（本轮互动已由阿灯写入旅店档案 PowerContext，住客代号：{{#start.guest_id#}}。下次入住，即使换一个新会话，阿灯也会记得你。）*"
+          selected: false
+          title: 直接回复
+          type: answer
+          variables: []
+        height: 140
+        id: answer_reply
+        position:
+          x: 1860
+          y: 300
+        positionAbsolute:
+          x: 1860
+          y: 300
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+  hash: ''
+  version: 0.1.5
