@@ -1,0 +1,7 @@
+DATA = [{"id": 3, "status": "done"}, {"id": 1, "status": "open"}, {"id": 2, "status": "open"}]
+
+
+def list_items(page=1, size=2, status=None):
+    """Baseline: status is accepted but filtering is not yet implemented."""
+    items = sorted(DATA, key=lambda item: item["id"])
+    return {"items": items[(page - 1) * size:page * size], "total": len(items)}

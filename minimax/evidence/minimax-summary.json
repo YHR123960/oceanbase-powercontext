@@ -1,0 +1,44 @@
+{
+  "calls": [
+    {
+      "time": "2026-11-18T01:10:12.681689+00:00",
+      "model": "MiniMax-M3.1-Flash",
+      "endpoint": "https://api.minimax.cn/v1/chat/completions",
+      "task_id": "status-filter",
+      "request_id": "074c2df3b681fe89490f18f9d8fbfc8e",
+      "usage": {
+        "total_tokens": 209,
+        "total_characters": 0,
+        "prompt_tokens": 206,
+        "completion_tokens": 3,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        }
+      }
+    },
+    {
+      "time": "2026-11-18T01:10:44.207501+00:00",
+      "model": "MiniMax-M3.1-Flash",
+      "endpoint": "https://api.minimax.cn/v1/chat/completions",
+      "task_id": "status-filter",
+      "request_id": "074c2e10e92a1ea53d6e055a87c0cc28",
+      "usage": {
+        "total_tokens": 1332,
+        "total_characters": 0,
+        "prompt_tokens": 1051,
+        "completion_tokens": 281,
+        "completion_tokens_details": {
+          "reasoning_tokens": 71
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 197
+        }
+      }
+    }
+  ],
+  "automatic_retries": 0,
+  "balance_verification": "Authenticated generation succeeded. The completion API does not expose promotional balance allocation or remaining balance; the stated 15 CNY is user-provided."
+}

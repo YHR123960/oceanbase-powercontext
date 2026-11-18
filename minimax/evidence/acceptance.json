@@ -1,0 +1,26 @@
+{
+  "1": {
+    "status": "PASS",
+    "detail": "fresh checkout copy, newly installed venv/dependencies, fresh seekdb and fresh PowerContext home"
+  },
+  "2": {
+    "status": "PASS",
+    "detail": "provider request/response ID, actual DB context, response source and applied source hashes agree"
+  },
+  "3": {
+    "status": "PASS",
+    "detail": "four source types, live V1/V2 replacement, old version inactive"
+  },
+  "4": {
+    "status": "PASS",
+    "detail": "native seekdb SQL persisted and used by fresh context processes"
+  },
+  "5": {
+    "status": "PASS",
+    "detail": "empty scope -> real PowerContext Memory -> clean service exit/restart -> fresh CLI reads state and skips completed generation"
+  },
+  "6": {
+    "status": "PASS",
+    "detail": "same frozen targets: six real behavior failures replayed, six pass after; three regression tests pass"
+  }
+}

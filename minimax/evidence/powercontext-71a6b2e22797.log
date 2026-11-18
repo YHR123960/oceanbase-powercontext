@@ -1,0 +1,83 @@
+[36m[1m
+Observability is opt-in[0m
+To collect this Server's telemetry in the local monitoring stack:
+[36m[1m
+  Step 1 - Start the local Docker Compose stack once; it prints the Grafana and Phoenix URLs.[0m
+[32m[1m    powercontext observability up --server-url http://127.0.0.1:2891[0m
+[36m[1m
+  Step 2 - Stop this Server, then restart it with the generated telemetry profile.[0m
+[32m[1m    powercontext server run --no-env-file --host 127.0.0.1 --port 2891 --role all --observability[0m
+[36m
+  In that command:[0m
+[36m[1m    --no-env-file    [0mskip env file load   keep this run's environment-only configuration
+[36m[1m    --host           [0mlisten address       keep the bind used by this run
+[36m[1m    --port           [0mlisten port          keep the port used by this run
+[36m[1m    --observability  [0mtelemetry profile    adds only tracing, logging and metrics settings
+[36m[1m    --role           [0mprocess role         keep api, background or all from this run
+
+  Verify delivery afterwards:
+[32m[1m    powercontext observability check --exercise[0m
+  Details: https://powercontext.oceanbase.io/en/docs/operate/reference-observability-stack/
+
+Inference capability notice
+未配置或未完整配置 PowerContext Server 推理模型（generation model 和 embedding model），
+可能影响部分制品功能。具体影响范围及配置方式请参考 PowerContext 官网配置说明：
+https://powercontext.oceanbase.io/en/docs/reference/configuration/
+2026-11-18T09:16:34+0800 INFO uvicorn Started server process [3149] service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:34+0800 INFO uvicorn Waiting for application startup. service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:34+0800 INFO powercontext.server.factory PowerContext Server is starting event="server.starting" unit="server" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO powercontext.builtin.runtime.composition Artifact processing configuration event="artifact_processing.configured" mode="global" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO powercontext.server.factory PowerContext Server is ready event="server.ready" unit="server" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO uvicorn Application startup complete. service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO uvicorn Uvicorn running on http://127.0.0.1:2891 (Press CTRL+C to quit) service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO powercontext.server.access PowerContext transport request completed event="transport.request.completed" operation="create_scope" outcome="success" transport="http" unit="transport" duration_ms=14.361053999891737 status_code=201 request_id=9aeb27ea60f329cd trace_id=737dc80206185035fa766fc3fb13a823 span_id=9aeb27ea60f329cd service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO powercontext.server.app PowerContext scoped application operation completed event="application.scope.completed" operation="list_atomic_memories" outcome="success" unit="application" duration_ms=7.951330000196322 scope="scp_2w9gaeasrjw5fx4sm0zjyzxvf1" request_id=568c34d3ff8e1441 trace_id=3f980775a709ee2e8006bb6168b7f5c4 span_id=e6f43f94413893c0 service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO powercontext.server.access PowerContext transport request completed event="transport.request.completed" operation="list_atomic_memories" outcome="success" transport="http" unit="transport" duration_ms=9.517281999933402 status_code=200 request_id=568c34d3ff8e1441 trace_id=3f980775a709ee2e8006bb6168b7f5c4 span_id=568c34d3ff8e1441 service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO powercontext.server.app PowerContext scoped application operation completed event="application.scope.completed" operation="remember_memory" outcome="success" unit="application" duration_ms=71.58309300007204 scope="scp_2w9gaeasrjw5fx4sm0zjyzxvf1" request_id=89c93928199b5ee4 trace_id=f278bdf6b9aa3639803f300ae2612f06 span_id=9eb4a63837e80e90 service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO powercontext.server.access PowerContext transport request completed event="transport.request.completed" operation="remember_memory" outcome="success" transport="http" unit="transport" duration_ms=73.34750399991208 status_code=200 request_id=89c93928199b5ee4 trace_id=f278bdf6b9aa3639803f300ae2612f06 span_id=89c93928199b5ee4 service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:36+0800 INFO uvicorn Shutting down service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:37+0800 INFO uvicorn Waiting for application shutdown. service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:37+0800 INFO powercontext.server.factory PowerContext Server is stopping event="server.stopping" unit="server" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:37+0800 INFO powercontext.server.factory PowerContext Server stopped event="server.stopped" unit="server" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:37+0800 INFO uvicorn Application shutdown complete. service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:37+0800 INFO uvicorn Finished server process [3149] service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="dba6aa5169ab40378b14ba182633aac3" service_role="all" service_target=null service_owner_role="all"
+[36m[1m
+Observability is opt-in[0m
+To collect this Server's telemetry in the local monitoring stack:
+[36m[1m
+  Step 1 - Start the local Docker Compose stack once; it prints the Grafana and Phoenix URLs.[0m
+[32m[1m    powercontext observability up --server-url http://127.0.0.1:2891[0m
+[36m[1m
+  Step 2 - Stop this Server, then restart it with the generated telemetry profile.[0m
+[32m[1m    powercontext server run --no-env-file --host 127.0.0.1 --port 2891 --role all --observability[0m
+[36m
+  In that command:[0m
+[36m[1m    --no-env-file    [0mskip env file load   keep this run's environment-only configuration
+[36m[1m    --host           [0mlisten address       keep the bind used by this run
+[36m[1m    --port           [0mlisten port          keep the port used by this run
+[36m[1m    --observability  [0mtelemetry profile    adds only tracing, logging and metrics settings
+[36m[1m    --role           [0mprocess role         keep api, background or all from this run
+
+  Verify delivery afterwards:
+[32m[1m    powercontext observability check --exercise[0m
+  Details: https://powercontext.oceanbase.io/en/docs/operate/reference-observability-stack/
+
+Inference capability notice
+未配置或未完整配置 PowerContext Server 推理模型（generation model 和 embedding model），
+可能影响部分制品功能。具体影响范围及配置方式请参考 PowerContext 官网配置说明：
+https://powercontext.oceanbase.io/en/docs/reference/configuration/
+2026-11-18T09:16:42+0800 INFO uvicorn Started server process [3192] service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:42+0800 INFO uvicorn Waiting for application startup. service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:42+0800 INFO powercontext.server.factory PowerContext Server is starting event="server.starting" unit="server" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:42+0800 INFO powercontext.builtin.runtime.composition Artifact processing configuration event="artifact_processing.configured" mode="global" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:42+0800 INFO powercontext.server.factory PowerContext Server is ready event="server.ready" unit="server" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:42+0800 INFO uvicorn Application startup complete. service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:42+0800 INFO uvicorn Uvicorn running on http://127.0.0.1:2891 (Press CTRL+C to quit) service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:43+0800 INFO powercontext.server.app PowerContext scoped application operation completed event="application.scope.completed" operation="list_atomic_memories" outcome="success" unit="application" duration_ms=14.78160100009518 scope="scp_2w9gaeasrjw5fx4sm0zjyzxvf1" request_id=3526c355105e3a51 trace_id=ae5f1e792e44fd537342a94d6ce58060 span_id=ace2bc1105823396 service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:43+0800 INFO powercontext.server.access PowerContext transport request completed event="transport.request.completed" operation="list_atomic_memories" outcome="success" transport="http" unit="transport" duration_ms=17.61614599990935 status_code=200 request_id=3526c355105e3a51 trace_id=ae5f1e792e44fd537342a94d6ce58060 span_id=3526c355105e3a51 service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:43+0800 INFO uvicorn Shutting down service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:43+0800 INFO uvicorn Waiting for application shutdown. service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:43+0800 INFO powercontext.server.factory PowerContext Server is stopping event="server.stopping" unit="server" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:43+0800 INFO powercontext.server.factory PowerContext Server stopped event="server.stopped" unit="server" service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:43+0800 INFO uvicorn Application shutdown complete. service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"
+2026-11-18T09:16:43+0800 INFO uvicorn Finished server process [3192] service_name="powercontext-server" service_version="0.1.dev1+g437aa0632.d20261118" service_instance_id="e3d24cab3736478dbf2662a880bdc01f" service_role="all" service_target=null service_owner_role="all"

@@ -1,0 +1,5 @@
+seekdb ready on port 2890
+Traceback (most recent call last):
+  File "/home/yhr/seekdb_competition/minimax_sdd_2026/minimax/.runtime/clean-bacf6f14d26d/checkout/minimax/scripts/seekdb_server.py", line 15, in <module>
+    while True: time.sleep(1)
+KeyboardInterrupt
